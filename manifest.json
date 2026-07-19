@@ -1,7 +1,7 @@
 {
   "name": "CVAI",
   "short_name": "CVAI",
-  "description": "CVAI — an AI chat app supported by the Gemini API.",
+  "description": "CVAI Made by du bist gut genug",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
