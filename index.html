@@ -1,102 +1,35 @@
 <!DOCTYPE html>
-<!-- saved from url=(0036)https://curvai.vercel.app/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en"><head><meta charset="UTF-8">
 
-<!-- 1. Clickjacking Protection (Prevent framing) -->
+<!-- Clickjacking protection -->
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
 
 <style>
-/* 2. Disable text selection and dragging across the app */
-body, html, * {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-/* Re-enable input text selection so users can still type normally in inputs/textareas */
-input, textarea {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
 body {transition: opacity ease-in 0.2s; } 
 body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
 </style>
-<script src="./CVAI — Made by du bist gut genug_files/cb=gapi.loaded_0" async=""></script>
-<script src="chrome-extension://lgblnfidahcdcjddiepkckcfdhpknnjh/content/popups-script.js"></script>
-
-<!-- Security Deterrents Script -->
-<script>
-  // 3. Disable Right-Click context menu
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-  }, false);
-
-  // 4. Block common browser shortcut keys (Ctrl+S, Ctrl+U, Ctrl+Shift+I, F12, etc.)
-  document.addEventListener('keydown', function(e) {
-    // Disable F12
-    if (e.key === 'F12' || e.keyCode === 123) {
-      e.preventDefault();
-      return false;
-    }
-    // Disable Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C (Element Selector)
-    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-      e.preventDefault();
-      return false;
-    }
-    // Disable Ctrl+U (View Source)
-    if (e.ctrlKey && (e.key === 'U' || e.keyCode === 85)) {
-      e.preventDefault();
-      return false;
-    }
-    // Disable Ctrl+S (Save)
-    if (e.ctrlKey && (e.key === 'S' || e.keyCode === 83)) {
-      e.preventDefault();
-      return false;
-    }
-  }, false);
-
-  // 5. Anti-DevTools Debugger Loop
-  // If a user forces DevTools open anyway, this loop triggers infinitely, pausing and lagging their debugger.
-  setInterval(function() {
-    (function() {
-      try {
-        (function a(i) {
-          if (('' + (i / i)).length !== 1 || i % 20 === 0) {
-            (function() {}).constructor('debugger')();
-          } else {
-            debugger;
-          }
-          a(++i);
-        })(0);
-      } catch (e) {}
-    })();
-  }, 1000);
-</script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>CVAI — Made by du bist gut genug</title>
 
 <!-- PWA / Add-to-Home-Screen setup -->
-<link rel="manifest" href="https://curvai.vercel.app/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#05070d">
-<link rel="icon" href="https://curvai.vercel.app/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="192x192" href="https://curvai.vercel.app/icon-192.png">
-<link rel="apple-touch-icon" href="https://curvai.vercel.app/apple-touch-icon.png">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CVAI">
 
 <link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./CVAI — Made by du bist gut genug_files/css2" rel="stylesheet">
-<script src="./CVAI — Made by du bist gut genug_files/jszip.min.js.download"></script>
-<script src="./CVAI — Made by du bist gut genug_files/marked.min.js.download"></script>
-<script src="./CVAI — Made by du bist gut genug_files/purify.min.js.download"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
 <style>
   :root{
     --void:#05070d;
@@ -224,8 +157,16 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     display:flex; align-items:center; gap:7px;
   }
   .msg-time{ font-weight:400; letter-spacing:0; text-transform:none; font-size:0.62rem; color:rgba(243,244,255,0.24); }
-  .msg-toolbar{ display:flex; gap:6px; margin-top:5px; opacity:0; transition:opacity .15s ease; }
+  .msg-toolbar{ display:flex; gap:6px; margin-top:5px; opacity:0; transition:opacity .15s ease; flex-wrap:wrap; }
   .msg-row:hover .msg-toolbar, .msg-toolbar.pinned{ opacity:1; }
+  @media (hover:none){ .msg-toolbar{ opacity:1; } }
+  .msg-edit-textarea{
+    width:100%; background:rgba(5,7,13,0.6); border:1px solid var(--line); border-radius:8px;
+    color:var(--star); font-family:'IBM Plex Mono',monospace; font-size:0.88rem; padding:9px 11px;
+    resize:vertical; min-height:60px; line-height:1.5;
+  }
+  .msg-edit-textarea:focus{ outline:none; border-color:var(--nebula-cyan); }
+  .msg-edit-actions{ display:flex; gap:6px; margin-top:8px; justify-content:flex-end; }
   .msg-copy-btn{
     background:rgba(243,244,255,0.05); border:1px solid var(--line); color:rgba(243,244,255,0.55);
     border-radius:6px; padding:3px 9px; font-size:0.68rem; cursor:pointer; font-family:'IBM Plex Mono',monospace;
@@ -440,7 +381,8 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   .bg-panel{
     position:absolute; top:38px; right:0; z-index:20;
     background:var(--panel-solid); border:1px solid var(--line); border-radius:12px;
-    padding:12px; width:216px; display:none; box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    padding:12px; width:240px; max-height:70vh; overflow-y:auto;
+    display:none; box-shadow:0 20px 50px rgba(0,0,0,0.5);
   }
   .bg-panel.show{ display:block; }
   .bg-panel-title{
@@ -551,10 +493,12 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     .msg{ font-size:clamp(0.84rem, 3.4vw, 0.92rem); padding:11px 14px; line-height:1.55; }
     .inputbar{ padding:12px 12px calc(12px + env(safe-area-inset-bottom)); }
     button.icon{ width:42px; height:42px; font-size:1.05rem; }
+    .msg-toolbar{ opacity:1; }
+    .bg-panel{ width:min(280px,86vw); }
   }
 </style>
-<script src="./CVAI — Made by du bist gut genug_files/js" async=""></script><script src="./CVAI — Made by du bist gut genug_files/api.js.download" type="text/javascript" charset="UTF-8" gapi_processed="true"></script></head>
-<body data-bg="matrix">
+</head>
+<body data-bg="nebula">
 
 <canvas id="stars" width="1920" height="1052"></canvas>
 <div class="nebula n1"></div>
@@ -567,19 +511,23 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 <div class="chatwrap">
   <div class="chatbar">
     <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-    <span class="title" id="chatTitle">f</span>
+    <span class="title" id="chatTitle">CVAI — live session</span>
     <div class="chatbar-right">
       <span id="adminBadge" class="admin-badge">🔒 ADMIN MODE</span>
       <button id="bgPickerBtn" class="chatbar-icon-btn" title="Background">🎨</button>
       <div id="bgPickerPanel" class="bg-panel">
         <div class="bg-panel-title">Background</div>
         <div class="bg-options">
-          <button class="bg-opt" data-bg="nebula" title="Nebula">🌌<span>Nebula</span></button>
-          <button class="bg-opt active" data-bg="matrix" title="Matrix">💻<span>Matrix</span></button>
+          <button class="bg-opt active" data-bg="nebula" title="Nebula">🌌<span>Nebula</span></button>
+          <button class="bg-opt" data-bg="matrix" title="Matrix">💻<span>Matrix</span></button>
           <button class="bg-opt" data-bg="constellation" title="Constellation">✨<span>Links</span></button>
           <button class="bg-opt" data-bg="aurora" title="Aurora">🌈<span>Aurora</span></button>
           <button class="bg-opt" data-bg="bubbles" title="Bubbles">🫧<span>Bubbles</span></button>
           <button class="bg-opt" data-bg="geo" title="Geo">🔺<span>Geo</span></button>
+          <button class="bg-opt" data-bg="rain" title="Rain">🌧️<span>Rain</span></button>
+          <button class="bg-opt" data-bg="fireflies" title="Fireflies">✨<span>Fireflies</span></button>
+          <button class="bg-opt" data-bg="waves" title="Waves">🌊<span>Waves</span></button>
+          <button class="bg-opt" data-bg="none" title="Plain">⬛<span>Plain</span></button>
         </div>
       </div>
       <button id="historyBtn" class="chatbar-icon-btn" title="Chats &amp; sign in">🗂️</button>
@@ -595,10 +543,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     <span class="icon">🔒</span>
     <span class="text" id="lockText"></span>
   </div>
-  <div id="messages"><div class="msg-row user"><div class="tag"><span>You</span><span class="msg-time">11:34 PM</span></div><div class="msg user"><p>f</p>
-</div></div><div class="msg-row ai"><div class="tag"><span>AI</span><span class="msg-time">11:34 PM</span></div><div class="msg ai"><p>Hello! It looks like your message was cut short. How can I help you today? If you'd like me to build or write some code, just let me know what you need!</p>
-</div><div class="msg-toolbar"><button class="msg-copy-btn" title="Copy message">📋 Copy</button></div></div><div class="msg-row user"><div class="tag"><span>You</span><span class="msg-time">11:34 PM</span></div><div class="msg user"><p>Build me a chess website with alot of ai options and nice chess piece</p>
-</div></div><div class="msg-row ai"><div class="tag"><span>AI</span></div><div class="msg ai thinking thinking-box"><span class="thinking-icon">✨</span><span class="thinking-text" style="opacity: 1;">Thinking…</span></div></div></div>
+  <div id="messages"></div>
   <button id="scrollBottomBtn" class="scroll-bottom-btn">↓ New messages</button>
   <div class="inputbar">
     <div id="imgPreviewWrap" style="display: none;">
@@ -614,10 +559,10 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
       <button id="removeImg">✕</button>
     </div>
     <div class="inputrow">
-      <button class="icon" id="attachBtn" title="Attach file" disabled="">📎</button>
-      <button class="icon" id="cameraBtn" title="Use camera" disabled="">📷</button>
-      <textarea id="textInput" rows="1" placeholder="Type a message, or ask it to build something…" style="height: auto;" disabled=""></textarea>
-      <button class="icon stop-mode" id="sendBtn" title="Stop">■</button>
+      <button class="icon" id="attachBtn" title="Attach file">📎</button>
+      <button class="icon" id="cameraBtn" title="Use camera">📷</button>
+      <textarea id="textInput" rows="1" placeholder="Type a message, or ask it to build something…"></textarea>
+      <button class="icon" id="sendBtn" title="Send">➤</button>
     </div>
   </div>
 </div>
@@ -629,7 +574,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
       <span>Live preview — sandboxed, not a real network server</span>
       <button id="closePreview">Close ✕</button>
     </div>
-    <iframe id="previewFrame" sandbox="allow-scripts" src="./CVAI — Made by du bist gut genug_files/saved_resource.html"></iframe>
+    <iframe id="previewFrame" sandbox="allow-scripts"></iframe>
   </div>
 </div>
 
@@ -654,20 +599,19 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     <span>Your chats</span>
     <button id="sidebarClose" title="Close">✕</button>
   </div>
-  <div id="authSection" class="auth-section" style="display: none;">
+  <div id="authSection" class="auth-section">
     <button id="googleSignInBtn" class="auth-btn">🔐 Sign in with Google</button>
     <button id="guestSignInBtn" class="auth-btn guest">👻 Continue as Guest</button>
   </div>
-  <div id="userSection" class="user-section" style="display: flex;">
-    <img id="userAvatar" class="user-avatar" alt="" src="./CVAI_files/unnamed.jpg">
+  <div id="userSection" class="user-section" style="display:none;">
+    <img id="userAvatar" class="user-avatar" alt="">
     <div class="user-meta">
-      <div id="userName">Lance Melencion</div>
+      <div id="userName"></div>
       <button id="signOutBtn">Sign out</button>
     </div>
   </div>
-  <button id="newChatBtn" class="new-chat-btn" style="display: block;">+ New chat</button>
-  <div id="sessionList" class="session-list"><div class="session-item"><span class="session-title">f</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">lanceabd\</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">Write a reflection (150-200words)
-"How c</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">build me a simple website</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">Build me a simple webpage</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">what game is thus</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">who made u?</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">make it better not ai slop</span><button class="session-del" title="Delete">🗑️</button></div><div class="session-item"><span class="session-title">what dog is this</span><button class="session-del" title="Delete">🗑️</button></div></div>
+  <button id="newChatBtn" class="new-chat-btn" style="display:none;">+ New chat</button>
+  <div id="sessionList" class="session-list"><div class="session-empty">Sign in to save and sync your chat history across devices — only you can see it.</div></div>
 </div>
 
 <script type="module">
@@ -709,6 +653,8 @@ let matrixCols = [];
 let constellationParticles = [];
 let bubbleParticles = [];
 let geoShapes = [];
+let rainDrops = [];
+let fireflyParticles = [];
 
 function resizeCanvas(){ W = starCanvas.width = window.innerWidth; H = starCanvas.height = window.innerHeight; }
 
@@ -738,6 +684,18 @@ function initModeState(){
       vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3,
       sides:[3,4,6][Math.floor(Math.random()*3)],
       hue:[160,265,300][Math.floor(Math.random()*3)]
+    }));
+  } else if(bgMode === 'rain'){
+    const count = Math.floor((W*H)/9000);
+    rainDrops = Array.from({length:count}, ()=>({
+      x:Math.random()*W, y:Math.random()*H, len:10+Math.random()*20,
+      speed:6+Math.random()*8, alpha:0.15+Math.random()*0.25
+    }));
+  } else if(bgMode === 'fireflies'){
+    const count = Math.floor((W*H)/26000);
+    fireflyParticles = Array.from({length:count}, ()=>({
+      x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-0.5)*0.4, vy:(Math.random()-0.5)*0.4,
+      phase:Math.random()*Math.PI*2, speed:0.02+Math.random()*0.03, hue:[160,50,300][Math.floor(Math.random()*3)]
     }));
   } else if(bgMode === 'nebula'){
     initStars();
@@ -874,16 +832,65 @@ function drawAurora(t){
   });
 }
 
+function drawRain(){
+  sctx.strokeStyle = 'rgba(94,234,212,0.4)';
+  sctx.lineWidth = 1;
+  rainDrops.forEach(d=>{
+    d.y += d.speed;
+    if(d.y > H){ d.y = -d.len; d.x = Math.random()*W; }
+    sctx.globalAlpha = d.alpha;
+    sctx.beginPath(); sctx.moveTo(d.x, d.y); sctx.lineTo(d.x, d.y+d.len); sctx.stroke();
+  });
+  sctx.globalAlpha = 1;
+}
+
+function drawFireflies(){
+  fireflyParticles.forEach(p=>{
+    p.x += p.vx; p.y += p.vy; p.phase += p.speed;
+    if(p.x < 0 || p.x > W) p.vx *= -1;
+    if(p.y < 0 || p.y > H) p.vy *= -1;
+    const glow = 0.3 + 0.55*Math.sin(p.phase);
+    const grad = sctx.createRadialGradient(p.x,p.y,0,p.x,p.y,10);
+    grad.addColorStop(0, `hsla(${p.hue},90%,70%,${Math.max(0,glow)})`);
+    grad.addColorStop(1, `hsla(${p.hue},90%,70%,0)`);
+    sctx.fillStyle = grad;
+    sctx.beginPath(); sctx.arc(p.x,p.y,10,0,Math.PI*2); sctx.fill();
+  });
+}
+
+function drawWaves(t){
+  const bands = [
+    { hue:180, amp:26, speed:0.6, yBase:H*0.66, alpha:0.16 },
+    { hue:265, amp:36, speed:0.4, yBase:H*0.8,  alpha:0.14 },
+    { hue:300, amp:20, speed:0.8, yBase:H*0.92, alpha:0.12 }
+  ];
+  bands.forEach((band,bi)=>{
+    sctx.beginPath();
+    for(let x=0; x<=W; x+=10){
+      const y = band.yBase + Math.sin(x*0.01 + t*band.speed + bi*2) * band.amp;
+      if(x===0) sctx.moveTo(x,y); else sctx.lineTo(x,y);
+    }
+    sctx.lineTo(W,H); sctx.lineTo(0,H); sctx.closePath();
+    sctx.fillStyle = `hsla(${band.hue},80%,60%,${band.alpha})`;
+    sctx.fill();
+  });
+}
+
 function renderFrame(){
   const t = Date.now()*0.001;
   if(bgMode === 'matrix'){
     drawMatrix();
+  } else if(bgMode === 'none'){
+    sctx.clearRect(0,0,W,H);
   } else {
     sctx.clearRect(0,0,W,H);
     if(bgMode === 'constellation') drawConstellation();
     else if(bgMode === 'bubbles') drawBubbles();
     else if(bgMode === 'geo') drawGeo();
     else if(bgMode === 'aurora') drawAurora(t);
+    else if(bgMode === 'rain') drawRain();
+    else if(bgMode === 'fireflies') drawFireflies();
+    else if(bgMode === 'waves') drawWaves(t);
     else drawNebula(t);
   }
   requestAnimationFrame(renderFrame);
@@ -1268,12 +1275,9 @@ function loadSession(id, data){
   currentSessionId = id;
   messagesEl.innerHTML = '';
   const msgs = data.messages || [];
-  history = msgs.map(m=> ({
-    role: m.role,
-    content: m.role === 'user' ? [{ type:'text', text: m.content }] : m.content
-  }));
-  msgs.forEach(m=>{
-    if(m.role === 'user') addPlainMessage('user', m.content);
+  history = msgs.map(m=> ({ role: m.role, parts: [{ text: m.content }] }));
+  msgs.forEach((m, i)=>{
+    if(m.role === 'user') addPlainMessage('user', m.content, false, null, { editable: true, historyIndex: i });
     else renderAssistantMessage(m.content, false);
   });
   chatTitle.textContent = data.title || 'CVAI — live session';
@@ -1299,9 +1303,8 @@ async function saveCurrentSession(){
   if(!currentUser || history.length === 0) return;
   if(!currentSessionId) currentSessionId = crypto.randomUUID();
   const slimMessages = history.map(turn=>{
-    if(typeof turn.content === 'string') return { role: turn.role, content: turn.content };
-    const textBlock = turn.content.find(b=> b.type === 'text');
-    return { role: turn.role, content: textBlock ? textBlock.text : '[attachment]' };
+    const textPart = (turn.parts || []).find(p=> p.text);
+    return { role: turn.role, content: textPart ? textPart.text : '[attachment]' };
   });
   const isDefaultTitle = chatTitle.textContent === 'CVAI — live session';
   const title = isDefaultTitle ? (slimMessages[0] ? slimMessages[0].content.slice(0,40) : 'New chat') : chatTitle.textContent;
@@ -1469,7 +1472,15 @@ function addMsgToolbar(row, getText, opts={}){
     regenBtn.onclick = ()=> regenerateLast();
     bar.appendChild(regenBtn);
   }
+  if(opts.onEdit){
+    const editBtn = document.createElement('button');
+    editBtn.className = 'msg-copy-btn'; editBtn.title = 'Edit this message';
+    editBtn.innerHTML = '✏️ Edit';
+    editBtn.onclick = ()=> opts.onEdit();
+    bar.appendChild(editBtn);
+  }
   row.appendChild(bar);
+  return bar;
 }
 
 const THINKING_PHRASES = [
@@ -1534,7 +1545,7 @@ function typeMarkdownInto(el, fullText){
   });
 }
 
-function addPlainMessage(role, text, isError, attachment){
+function addPlainMessage(role, text, isError, attachment, opts={}){
   const row = document.createElement('div');
   const kind = role.includes('admin') ? 'admin' : (role.includes('user') ? 'user' : 'ai');
   row.className = 'msg-row ' + kind;
@@ -1577,12 +1588,374 @@ function addPlainMessage(role, text, isError, attachment){
   }
   row.appendChild(div);
   if(kind === 'ai' && !isThinking && text){
-    addMsgToolbar(row, ()=> text);
+    addMsgToolbar(row, ()=> text, { showRegenerate: !!opts.showRegenerate });
+  }
+  if(kind === 'user' && text && opts.editable && !attachment){
+    addMsgToolbar(row, ()=> text, {
+      onEdit: ()=> startEditingMessage(row, div, text, opts.historyIndex)
+    });
   }
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   return row;
 }
 
+function startEditingMessage(row, div, originalText, historyIndex){
+  const toolbar = row.querySelector('.msg-toolbar');
+  if(toolbar) toolbar.style.display = 'none';
+  const textarea = document.createElement('textarea');
+  textarea.className = 'msg-edit-textarea';
+  textarea.value = originalText;
+  const actions = document.createElement('div');
+  actions.className = 'msg-edit-actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'msg-copy-btn'; saveBtn.textContent = '✓ Save & resend';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'msg-copy-btn'; cancelBtn.textContent = '✕ Cancel';
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+
+  div.innerHTML = '';
+  div.appendChild(textarea);
+  div.appendChild(actions);
+
+  const autoGrow = ()=>{ textarea.style.height='auto'; textarea.style.height = Math.min(textarea.scrollHeight,260)+'px'; };
+  autoGrow();
+  textarea.addEventListener('input', autoGrow);
+  textarea.focus();
+  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+
+  cancelBtn.onclick = ()=>{
+    setMarkdownContent(div, originalText);
+    if(toolbar) toolbar.style.display = '';
+  };
+  saveBtn.onclick = ()=>{
+    const newText = textarea.value.trim();
+    if(!newText) return;
+    editMessageAndResend(row, historyIndex, newText);
+  };
+  textarea.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)){ e.preventDefault(); saveBtn.onclick(); }
+    if(e.key === 'Escape'){ e.preventDefault(); cancelBtn.onclick(); }
+  });
+}
+
+function editMessageAndResend(row, historyIndex, newText){
+  if(busy) stopGeneration();
+  let node = row;
+  while(node){
+    const next = node.nextElementSibling;
+    node.remove();
+    node = next;
+  }
+  history = (typeof historyIndex === 'number' && historyIndex >= 0) ? history.slice(0, historyIndex) : [];
+  sendMessage(newText, null);
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function parseFiles(text){
-  const re = /\*\*([\w./-]+\.\w+)\*\*\s*\n
+  const re = /\*\*([\w./-]+\.\w+)\*\*\s*\n```(\w*)\n([\s\S]*?)```/g;
+  const files = [];
+  let lastIndex = 0;
+  let match;
+  const introParts = [];
+  while((match = re.exec(text))){
+    introParts.push(text.slice(lastIndex, match.index));
+    files.push({ name: match[1], lang: match[2] || 'text', code: match[3].replace(/\n$/, '') });
+    lastIndex = re.lastIndex;
+  }
+  if(files.length === 0) return { files: [], intro: text, outro: '' };
+  return { files, intro: introParts.join('').trim(), outro: text.slice(lastIndex).trim() };
+}
+
+function buildFileCard(file){
+  const card = document.createElement('div');
+  card.className = 'filecard';
+
+  const header = document.createElement('div');
+  header.className = 'filecard-header';
+  const nameSpan = document.createElement('span'); nameSpan.textContent = file.name;
+  const langSpan = document.createElement('span'); langSpan.className = 'lang'; langSpan.textContent = file.lang;
+  header.appendChild(nameSpan); header.appendChild(langSpan);
+
+  const pre = document.createElement('pre');
+  const code = document.createElement('code');
+  code.className = 'language-' + file.lang;
+  code.textContent = file.code;
+  pre.appendChild(code);
+
+  const actions = document.createElement('div');
+  actions.className = 'filecard-actions';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = '📋 Copy code';
+  copyBtn.onclick = ()=>{
+    navigator.clipboard.writeText(file.code).then(()=>{
+      copyBtn.textContent = '✅ Copied';
+      setTimeout(()=> copyBtn.textContent = '📋 Copy code', 1200);
+    }).catch(()=>{});
+  };
+  actions.appendChild(copyBtn);
+
+  const downloadBtn = document.createElement('button');
+  downloadBtn.textContent = '⬇ Download';
+  downloadBtn.onclick = ()=>{
+    const blob = new Blob([file.code], { type:'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = file.name; a.click();
+    URL.revokeObjectURL(url);
+  };
+  actions.appendChild(downloadBtn);
+
+  const isHtml = /\.html?$/i.test(file.name) || file.lang === 'html';
+  if(isHtml){
+    const previewBtn = document.createElement('button');
+    previewBtn.textContent = '👁 Preview';
+    previewBtn.onclick = ()=>{
+      previewFrame.srcdoc = file.code;
+      previewOverlay.style.display = 'flex';
+    };
+    actions.appendChild(previewBtn);
+  }
+
+  card.appendChild(header); card.appendChild(pre); card.appendChild(actions);
+  return card;
+}
+
+function renderAssistantMessage(text, shouldType, opts={}){
+  const { files, intro, outro } = parseFiles(text || '');
+  if(files.length === 0){
+    return addPlainMessage('ai', text, false, null, opts);
+  }
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  const tag = document.createElement('div');
+  tag.className = 'tag';
+  tag.innerHTML = '<span>AI</span><span class="msg-time">' + formatTime(new Date()) + '</span>';
+  row.appendChild(tag);
+
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  if(intro) setMarkdownContent(div, intro);
+  files.forEach(f=> div.appendChild(buildFileCard(f)));
+  if(outro){
+    const outroEl = document.createElement('div');
+    setMarkdownContent(outroEl, outro);
+    while(outroEl.firstChild) div.appendChild(outroEl.firstChild);
+  }
+  row.appendChild(div);
+  addMsgToolbar(row, ()=> text, { showRegenerate: !!opts.showRegenerate });
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return row;
+}
+
+function addThinkingRow(){
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  const tag = document.createElement('div');
+  tag.className = 'tag';
+  tag.innerHTML = '<span>AI</span>';
+  row.appendChild(tag);
+  const div = document.createElement('div');
+  div.className = 'msg ai thinking thinking-box';
+  const icon = document.createElement('span'); icon.className = 'thinking-icon'; icon.textContent = '✨';
+  const textEl = document.createElement('span'); textEl.className = 'thinking-text';
+  div.appendChild(icon); div.appendChild(textEl);
+  row.appendChild(div);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  const stopCycle = startThinkingCycle(textEl);
+  return { row, stopCycle };
+}
+
+// ================= building Gemini-format request parts =================
+function buildUserParts(text, attachment){
+  const parts = [];
+  if(text) parts.push({ text });
+  if(attachment){
+    if(attachment.zipText){
+      parts.push({ text: attachment.zipText });
+    } else if(attachment.base64){
+      parts.push({ inlineData: { mimeType: attachment.mediaType, data: attachment.base64 } });
+    }
+  }
+  if(parts.length === 0) parts.push({ text: '' });
+  return parts;
+}
+
+function historyToDisplayText(entry){
+  if(!entry || !entry.parts) return '';
+  const t = entry.parts.find(p=> p.text);
+  return t ? t.text : '';
+}
+
+// ================= admin commands =================
+function handleAdminCommand(cmd){
+  const lower = cmd.trim();
+  if(lower === '/help'){
+    addPlainMessage('admin', 'Admin commands: /lock [message] — lock the chat for everyone in this session, /unlock — unlock it, /announce <message> — show a banner, /exitadmin — leave admin mode.');
+    return true;
+  }
+  if(lower.startsWith('/lock')){
+    const msg = lower.slice(5).trim();
+    lockChat(msg);
+    addPlainMessage('admin', 'Chat locked.' + (msg ? ' (' + msg + ')' : ''));
+    return true;
+  }
+  if(lower === '/unlock'){
+    unlockChat();
+    addPlainMessage('admin', 'Chat unlocked.');
+    return true;
+  }
+  if(lower.startsWith('/announce')){
+    const msg = cmd.slice(cmd.indexOf(' ')+1).trim();
+    if(msg){ showAnnouncement(msg); addPlainMessage('admin', 'Announcement posted.'); }
+    return true;
+  }
+  if(lower === '/exitadmin'){
+    adminMode = false;
+    updateAdminIndicator();
+    addPlainMessage('admin', 'Left admin mode.');
+    return true;
+  }
+  return false;
+}
+
+// ================= core send / stop / regenerate =================
+let activeAbortController = null;
+
+function setBusy(state){
+  busy = state;
+  sendBtn.classList.toggle('stop-mode', state);
+  sendBtn.textContent = state ? '■' : '➤';
+  sendBtn.title = state ? 'Stop' : 'Send';
+  attachBtn.disabled = state;
+  cameraBtn.disabled = state;
+}
+
+async function runAIResponse(){
+  const thinking = addThinkingRow();
+  setBusy(true);
+  activeAbortController = new AbortController();
+  try{
+    const body = {
+      contents: history,
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      generationConfig: { temperature: 0.9 }
+    };
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: activeAbortController.signal
+    });
+    const data = await response.json();
+    thinking.stopCycle();
+    thinking.row.remove();
+
+    if(!response.ok || data.error){
+      const message = (data.error && data.error.message) || ('Request failed (' + response.status + ')');
+      if(response.status === 429){
+        lockChat(RATE_LIMIT_LOCK_MESSAGE);
+      }
+      addPlainMessage('ai', "Something went wrong: " + message, true);
+      return;
+    }
+    const candidate = data.candidates && data.candidates[0];
+    const replyParts = (candidate && candidate.content && candidate.content.parts) || [];
+    const replyText = replyParts.map(p=> p.text || '').join('').trim() || "I couldn't generate a response for that — try rephrasing?";
+
+    history.push({ role:'model', parts:[{ text: replyText }] });
+    await renderAssistantMessage(replyText, true, { showRegenerate: true });
+    scheduleSave();
+  }catch(err){
+    thinking.stopCycle();
+    thinking.row.remove();
+    if(err.name !== 'AbortError'){
+      addPlainMessage('ai', 'Network error: ' + err.message, true);
+    } else {
+      addPlainMessage('admin', 'Generation stopped.');
+    }
+  }finally{
+    activeAbortController = null;
+    setBusy(false);
+  }
+}
+
+function stopGeneration(){
+  if(activeAbortController) activeAbortController.abort();
+}
+
+function regenerateLast(){
+  if(busy) return;
+  // remove the last AI row from the DOM
+  const rows = messagesEl.querySelectorAll('.msg-row.ai');
+  const lastAiRow = rows[rows.length-1];
+  if(lastAiRow) lastAiRow.remove();
+  // remove the last model turn from history
+  if(history.length && history[history.length-1].role === 'model') history.pop();
+  runAIResponse();
+}
+
+async function sendMessage(text, attachment){
+  if(!text && !attachment) return;
+  if(busy) return;
+
+  if(chatLocked && !adminMode){
+    addPlainMessage('admin', lockMessage || DEFAULT_LOCK_MESSAGE);
+    return;
+  }
+
+  if(!adminMode && text === ADMIN_PASSCODE){
+    adminMode = true;
+    updateAdminIndicator();
+    addPlainMessage('admin', 'Admin mode enabled. Type /help for commands.');
+    return;
+  }
+
+  if(adminMode && text.startsWith('/')){
+    if(handleAdminCommand(text)) return;
+  }
+
+  const sentText = adminMode ? ('[ADMIN ANNOUNCEMENT] ' + text) : text;
+
+  const historyIndex = history.length;
+  addPlainMessage('user', text, false, attachment, { editable: !adminMode, historyIndex });
+  history.push({ role:'user', parts: buildUserParts(sentText, attachment) });
+  scheduleSave();
+
+  await runAIResponse();
+}
+
+async function send(){
+  const text = textInput.value.trim();
+  const attachment = pendingAttachment;
+  if(!text && !attachment) return;
+  textInput.value = '';
+  textInput.style.height = 'auto';
+  pendingAttachment = null;
+  imgPreviewWrap.style.display = 'none';
+  fileInput.value = '';
+  await sendMessage(text, attachment);
+}
+
+// initial state
+updateAdminIndicator();
+if(!currentUser){
+  addPlainMessage('ai', "Hey! I'm CVAI. Ask me anything, or ask me to build something and I'll hand you downloadable, previewable files.");
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
+
