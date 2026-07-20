@@ -302,7 +302,14 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     color:var(--nebula-cyan); border-bottom:1px solid rgba(94,234,212,0.18);
   }
   .filecard-header .lang{ color:rgba(243,244,255,0.4); font-weight:500; text-transform:uppercase; font-size:0.65rem; }
-  .filecard pre{ margin:0; padding:12px; max-height:260px; overflow:auto; font-size:0.8rem; line-height:1.5; white-space:pre; }
+  .code-block{ display:flex; max-height:320px; overflow:auto; }
+  .code-gutter{
+    flex:none; user-select:none; text-align:right; padding:12px 10px 12px 14px;
+    color:rgba(243,244,255,0.28); font-family:'IBM Plex Mono',monospace;
+    font-size:0.8rem; line-height:1.5; white-space:pre;
+    border-right:1px solid rgba(94,234,212,0.14); background:rgba(255,255,255,0.02);
+  }
+  .filecard pre{ margin:0; padding:12px; overflow:visible; font-size:0.8rem; line-height:1.5; white-space:pre; flex:1; min-width:0; }
   .filecard code{ word-break:normal; }
   .filecard-actions{ display:flex; gap:6px; padding:7px 10px; border-top:1px solid rgba(94,234,212,0.14); }
   .filecard-actions button{
@@ -1894,11 +1901,19 @@ function buildFileCard(file, allFiles=[file]){
   const langSpan = document.createElement('span'); langSpan.className = 'lang'; langSpan.textContent = file.lang;
   header.appendChild(nameSpan); header.appendChild(langSpan);
 
+  const codeBlock = document.createElement('div');
+  codeBlock.className = 'code-block';
+  const lineCount = file.code.split('\n').length;
+  const gutter = document.createElement('div');
+  gutter.className = 'code-gutter';
+  gutter.textContent = Array.from({length:lineCount}, (_,i)=> i+1).join('\n');
   const pre = document.createElement('pre');
   const code = document.createElement('code');
   code.className = 'language-' + file.lang;
   code.textContent = file.code;
   pre.appendChild(code);
+  codeBlock.appendChild(gutter);
+  codeBlock.appendChild(pre);
 
   const actions = document.createElement('div');
   actions.className = 'filecard-actions';
@@ -1935,7 +1950,7 @@ function buildFileCard(file, allFiles=[file]){
     actions.appendChild(previewBtn);
   }
 
-  card.appendChild(header); card.appendChild(pre); card.appendChild(actions);
+  card.appendChild(header); card.appendChild(codeBlock); card.appendChild(actions);
   return card;
 }
 
