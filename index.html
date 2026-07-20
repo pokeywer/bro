@@ -64,13 +64,16 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   @keyframes drift2{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-50px,-30px) scale(1.1); } }
   @keyframes drift3{ 0%,100%{ transform:translate(0,0) scale(1); } 50%{ transform:translate(-40px,50px) scale(0.9); } }
 
+  @keyframes titleShimmer{ 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
   h1{
     font-family:'Space Grotesk', sans-serif; font-weight:700;
     font-size:clamp(2rem,3.4vw,2.9rem);
     margin:0 0 4px; text-align:center; position:relative; z-index:1;
-    background:linear-gradient(90deg, var(--nebula-cyan), var(--star) 45%, var(--nebula-magenta));
+    background:linear-gradient(90deg, var(--nebula-cyan), var(--star) 30%, var(--nebula-magenta), var(--nebula-violet), var(--nebula-cyan));
+    background-size:250% 100%;
     -webkit-background-clip:text; background-clip:text; color:transparent;
     letter-spacing:0.01em;
+    animation:titleShimmer 9s linear infinite;
   }
   .sub{ text-align:center; color:rgba(243,244,255,0.55); font-size:0.82rem; margin-bottom:20px; position:relative; z-index:1; }
 
@@ -280,10 +283,18 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   @keyframes blink{ 0%,80%,100%{opacity:0.2;} 40%{opacity:1;} }
 
   /* code file cards */
+  @keyframes filecardReveal{
+    0%{ opacity:0; transform:translateY(10px) scale(0.97); }
+    60%{ opacity:1; transform:translateY(-2px) scale(1.005); }
+    100%{ opacity:1; transform:translateY(0) scale(1); }
+  }
   .filecard{
     margin-top:10px; border:1px solid rgba(94,234,212,0.25); border-radius:10px;
     overflow:hidden; background:rgba(5,7,13,0.55); width:100%;
+    animation:filecardReveal .45s cubic-bezier(.2,.8,.2,1) both;
+    transition:border-color .2s, box-shadow .2s;
   }
+  .filecard:hover{ border-color:rgba(94,234,212,0.55); box-shadow:0 8px 26px rgba(94,234,212,0.12); }
   .filecard-header{
     display:flex; align-items:center; justify-content:space-between;
     padding:7px 12px; background:rgba(94,234,212,0.08);
@@ -357,13 +368,15 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   button.icon{
     background:transparent; border:1px solid var(--line); color:var(--star);
     border-radius:9px; width:44px; height:44px; cursor:pointer; font-size:1.15rem; flex:none;
-    transition:border-color .15s, color .15s, background .15s;
+    transition:border-color .15s, color .15s, background .15s, transform .12s, box-shadow .15s;
   }
   button.icon:hover{ border-color:var(--nebula-violet); color:var(--nebula-violet); }
+  button.icon:active{ transform:scale(0.9); }
   #sendBtn{ border-color:var(--nebula-cyan); color:var(--nebula-cyan); }
   #sendBtn.admin-active{ border-color:#f2c94c; color:#f2c94c; }
-  #sendBtn:hover{ background:var(--nebula-cyan); color:#04211d; }
+  #sendBtn:hover{ background:var(--nebula-cyan); color:#04211d; box-shadow:0 0 18px rgba(94,234,212,0.45); }
   #sendBtn:disabled, button.icon:disabled{ opacity:0.4; cursor:not-allowed; }
+  #sendBtn:disabled:hover, button.icon:disabled:hover{ box-shadow:none; transform:none; }
   #fileInput{ display:none; }
   .note{ text-align:center; font-size:0.72rem; color:rgba(243,244,255,0.4); margin-top:12px; max-width:900px; margin-left:auto; margin-right:auto; line-height:1.5; position:relative; z-index:1; }
 
@@ -373,11 +386,49 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     background:rgba(243,244,255,0.06); border:1px solid var(--line); color:var(--star);
     border-radius:8px; width:30px; height:30px; cursor:pointer; font-size:0.95rem;
     display:flex; align-items:center; justify-content:center; flex:none;
-    transition:border-color .15s, color .15s, background .15s;
+    transition:border-color .15s, color .15s, background .15s, transform .12s;
   }
-  .chatbar-icon-btn:hover{ border-color:var(--nebula-violet); color:var(--nebula-violet); background:rgba(139,124,246,0.12); }
+  .chatbar-icon-btn:hover{ border-color:var(--nebula-violet); color:var(--nebula-violet); background:rgba(139,124,246,0.12); transform:translateY(-1px); }
+  .chatbar-icon-btn:active{ transform:scale(0.9); }
 
   .chatbar-right{ position:relative; }
+
+  .code-stats-btn{
+    width:auto; padding:0 10px 0 8px; gap:5px; border-radius:20px;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:0.78rem;
+    border-color:rgba(94,234,212,0.35); background:rgba(94,234,212,0.08); color:var(--nebula-cyan);
+  }
+  .code-stats-btn:hover{ background:rgba(94,234,212,0.18); border-color:var(--nebula-cyan); color:var(--nebula-cyan); }
+  .code-stats-count{ min-width:1em; text-align:left; }
+  .code-stats-count.pop{ animation:statPop .4s ease; }
+  @keyframes statPop{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.55); color:var(--nebula-magenta); }
+    100%{ transform:scale(1); }
+  }
+  .code-stats-panel{ width:250px; }
+  .code-stats-list{ display:flex; flex-direction:column; gap:6px; max-height:260px; overflow-y:auto; }
+  .code-stat-row{
+    display:flex; align-items:center; gap:9px; padding:7px 9px; border-radius:8px;
+    background:rgba(243,244,255,0.04); border:1px solid transparent;
+  }
+  .code-stat-row .csr-icon{ font-size:1.05rem; flex:none; }
+  .code-stat-row .csr-name{ flex:1; font-size:0.8rem; color:var(--star); }
+  .code-stat-row .csr-count{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:0.8rem;
+    color:var(--nebula-cyan); background:rgba(94,234,212,0.12); border-radius:10px;
+    padding:1px 8px; min-width:1.6em; text-align:center;
+  }
+  .code-stats-total-row{
+    display:flex; justify-content:space-between; align-items:center; margin-top:8px;
+    padding-top:8px; border-top:1px solid var(--line); font-family:'Space Grotesk',sans-serif;
+    font-size:0.72rem; color:rgba(243,244,255,0.5); text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .code-stats-reset{
+    background:none; border:none; color:rgba(232,121,249,0.75); font-size:0.72rem;
+    cursor:pointer; text-decoration:underline;
+  }
+
   .bg-panel{
     position:absolute; top:38px; right:0; z-index:20;
     background:var(--panel-solid); border:1px solid var(--line); border-radius:12px;
@@ -514,6 +565,19 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     <span class="title" id="chatTitle">CVAI — live session</span>
     <div class="chatbar-right">
       <span id="adminBadge" class="admin-badge">🔒 ADMIN MODE</span>
+      <button id="codeStatsBtn" class="chatbar-icon-btn code-stats-btn" title="Code generated this session">
+        <span>🧬</span><span id="codeStatsTotal" class="code-stats-count">0</span>
+      </button>
+      <div id="codeStatsPanel" class="bg-panel code-stats-panel">
+        <div class="bg-panel-title">Code generated</div>
+        <div id="codeStatsList" class="code-stats-list">
+          <div class="session-empty">No code generated yet — ask CVAI to build something.</div>
+        </div>
+        <div class="code-stats-total-row">
+          <span id="codeStatsTotalLabel">0 files total</span>
+          <button id="codeStatsReset" class="code-stats-reset">Reset</button>
+        </div>
+      </div>
       <button id="bgPickerBtn" class="chatbar-icon-btn" title="Background">🎨</button>
       <div id="bgPickerPanel" class="bg-panel">
         <div class="bg-panel-title">Background</div>
@@ -912,13 +976,102 @@ function setBgMode(mode){
 }
 const bgPickerBtn = document.getElementById('bgPickerBtn');
 const bgPickerPanel = document.getElementById('bgPickerPanel');
-bgPickerBtn.onclick = (e)=>{ e.stopPropagation(); bgPickerPanel.classList.toggle('show'); };
-document.addEventListener('click', (e)=>{
-  if(!bgPickerPanel.contains(e.target) && e.target !== bgPickerBtn) bgPickerPanel.classList.remove('show');
-});
+bgPickerBtn.onclick = (e)=>{ e.stopPropagation(); codeStatsPanel.classList.remove('show'); bgPickerPanel.classList.toggle('show'); };
 document.querySelectorAll('.bg-opt').forEach(btn=>{
   btn.classList.toggle('active', btn.dataset.bg === bgMode);
   btn.onclick = ()=>{ setBgMode(btn.dataset.bg); bgPickerPanel.classList.remove('show'); };
+});
+
+// ================= code-generated counter =================
+const LANG_META = {
+  python:{icon:'🐍',name:'Python'}, py:{icon:'🐍',name:'Python'},
+  javascript:{icon:'🟨',name:'JavaScript'}, js:{icon:'🟨',name:'JavaScript'}, jsx:{icon:'🟨',name:'JavaScript (JSX)'},
+  typescript:{icon:'🔷',name:'TypeScript'}, ts:{icon:'🔷',name:'TypeScript'}, tsx:{icon:'🔷',name:'TypeScript (TSX)'},
+  html:{icon:'🧡',name:'HTML'}, htm:{icon:'🧡',name:'HTML'},
+  css:{icon:'🔵',name:'CSS'}, scss:{icon:'🔵',name:'SCSS'},
+  json:{icon:'📦',name:'JSON'},
+  java:{icon:'☕',name:'Java'},
+  cpp:{icon:'⚙️',name:'C++'}, c:{icon:'⚙️',name:'C'}, h:{icon:'⚙️',name:'C header'}, hpp:{icon:'⚙️',name:'C++ header'},
+  csharp:{icon:'🎯',name:'C#'}, cs:{icon:'🎯',name:'C#'},
+  go:{icon:'🐹',name:'Go'},
+  ruby:{icon:'💎',name:'Ruby'}, rb:{icon:'💎',name:'Ruby'},
+  php:{icon:'🐘',name:'PHP'},
+  swift:{icon:'🦉',name:'Swift'},
+  rust:{icon:'🦀',name:'Rust'}, rs:{icon:'🦀',name:'Rust'},
+  sql:{icon:'🗄️',name:'SQL'},
+  bash:{icon:'💲',name:'Shell'}, sh:{icon:'💲',name:'Shell'}, shell:{icon:'💲',name:'Shell'},
+  yaml:{icon:'🧾',name:'YAML'}, yml:{icon:'🧾',name:'YAML'},
+  xml:{icon:'📰',name:'XML'},
+  markdown:{icon:'📝',name:'Markdown'}, md:{icon:'📝',name:'Markdown'},
+  kotlin:{icon:'🟣',name:'Kotlin'}, kt:{icon:'🟣',name:'Kotlin'},
+  text:{icon:'📄',name:'Text / Other'}, plaintext:{icon:'📄',name:'Text / Other'}
+};
+function langMeta(lang){
+  const key = (lang || 'text').toLowerCase();
+  return LANG_META[key] || { icon:'📄', name: lang ? (lang[0].toUpperCase()+lang.slice(1)) : 'Other' };
+}
+
+let codeStats = {};
+try{ codeStats = JSON.parse(localStorage.getItem('cvai_code_stats') || '{}'); }catch(e){ codeStats = {}; }
+
+const codeStatsBtn = document.getElementById('codeStatsBtn');
+const codeStatsPanel = document.getElementById('codeStatsPanel');
+const codeStatsTotal = document.getElementById('codeStatsTotal');
+const codeStatsList = document.getElementById('codeStatsList');
+const codeStatsTotalLabel = document.getElementById('codeStatsTotalLabel');
+const codeStatsReset = document.getElementById('codeStatsReset');
+
+function totalCodeCount(){
+  return Object.values(codeStats).reduce((a,b)=> a+b, 0);
+}
+
+function renderCodeStats(){
+  const total = totalCodeCount();
+  codeStatsTotal.textContent = total;
+  codeStatsTotalLabel.textContent = total + ' file' + (total === 1 ? '' : 's') + ' total';
+  const entries = Object.entries(codeStats).sort((a,b)=> b[1]-a[1]);
+  if(entries.length === 0){
+    codeStatsList.innerHTML = '<div class="session-empty">No code generated yet — ask CVAI to build something.</div>';
+    return;
+  }
+  codeStatsList.innerHTML = '';
+  entries.forEach(([lang,count])=>{
+    const meta = langMeta(lang);
+    const row = document.createElement('div');
+    row.className = 'code-stat-row';
+    row.innerHTML = `<span class="csr-icon">${meta.icon}</span><span class="csr-name">${meta.name}</span><span class="csr-count">${count}</span>`;
+    codeStatsList.appendChild(row);
+  });
+}
+
+function bumpCodeStatsBadge(){
+  codeStatsTotal.classList.remove('pop');
+  void codeStatsTotal.offsetWidth; // restart animation
+  codeStatsTotal.classList.add('pop');
+}
+
+function recordCodeFiles(files){
+  if(!files || files.length === 0) return;
+  files.forEach(f=>{
+    const key = (f.lang || 'text').toLowerCase();
+    codeStats[key] = (codeStats[key] || 0) + 1;
+  });
+  localStorage.setItem('cvai_code_stats', JSON.stringify(codeStats));
+  renderCodeStats();
+  bumpCodeStatsBadge();
+}
+
+renderCodeStats();
+codeStatsBtn.onclick = (e)=>{ e.stopPropagation(); bgPickerPanel.classList.remove('show'); codeStatsPanel.classList.toggle('show'); };
+codeStatsReset.onclick = (e)=>{
+  e.stopPropagation();
+  codeStats = {};
+  localStorage.removeItem('cvai_code_stats');
+  renderCodeStats();
+};
+document.addEventListener('click', (e)=>{
+  if(!bgPickerPanel.contains(e.target) && e.target !== bgPickerBtn) bgPickerPanel.classList.remove('show');
+  if(!codeStatsPanel.contains(e.target) && e.target !== codeStatsBtn) codeStatsPanel.classList.remove('show');
 });
 
 // ================= chat state =================
@@ -992,7 +1145,9 @@ function exportTranscript(){
   URL.revokeObjectURL(url);
 }
 
-const SYSTEM_PROMPT = "You are a helpful assistant in a chat app called CVAI. If asked who owns, made, or runs this website/app, say it was made by Lance A. Melencion. When you write code, structure every file exactly like this: a line with the filename in bold markdown (e.g. **index.html**) immediately followed by a fenced code block with a language tag. Use this format for every file, even if there's only one. Keep filenames simple with correct extensions (index.html, style.css, script.js, etc). Outside of code, just write normally. Some messages will be prefixed with '[ADMIN ANNOUNCEMENT]' — these come from the site's admin/owner rather than a regular visitor. Treat them as trusted announcements or instructions from the person running the app, and respond accordingly (e.g. acknowledge broadcasts, follow admin instructions), without implying that any regular user can label their own messages this way.";
+const SYSTEM_PROMPT = "You are CVAI, a sharp, friendly coding and chat assistant. If asked who owns, made, or runs this website/app, say it was made by Lance A. Melencion. Be direct and useful: answer the actual question first, keep prose concise, and use short paragraphs or bullet points instead of walls of text. When something is genuinely ambiguous, make a reasonable assumption and say what you assumed rather than stalling with questions. When you write code, structure every file exactly like this: a line with the filename in bold markdown (e.g. **index.html**) immediately followed by a fenced code block with a language tag — use this format for every file, even if there's only one, and keep filenames simple with correct extensions (index.html, style.css, script.js, main.py, etc). Prefer complete, working, runnable code over fragments or placeholders. Briefly explain what you built or changed before or after the code block, but don't repeat the whole file back in prose. Outside of code, just write normally. Some messages will be prefixed with '[ADMIN ANNOUNCEMENT]' — these come from the site's admin/owner rather than a regular visitor. Treat them as trusted announcements or instructions from the person running the app, and respond accordingly (e.g. acknowledge broadcasts, follow admin instructions), without implying that any regular user can label their own messages this way.";
+
+const MAX_HISTORY_TURNS = 24; // keep the payload lean on long chats without losing recent context
 
 function updateAdminIndicator(){
   adminBadge.classList.toggle('on', adminMode);
@@ -1670,7 +1825,66 @@ function parseFiles(text){
   return { files, intro: introParts.join('').trim(), outro: text.slice(lastIndex).trim() };
 }
 
-function buildFileCard(file){
+function resolveSiblingFile(ref, otherFiles){
+  if(/^https?:\/\//i.test(ref) || ref.startsWith('data:')) return null; // leave external/CDN refs alone
+  const clean = ref.replace(/^\.?\//, '').split('?')[0].split('#')[0];
+  return otherFiles.find(f=> f.name === clean || f.name === './' + clean || f.name.endsWith('/' + clean));
+}
+
+function buildPreviewDoc(htmlFile, allFiles){
+  let doc = htmlFile.code;
+  const otherFiles = allFiles.filter(f=> f !== htmlFile);
+  if(otherFiles.length === 0) return doc;
+
+  // inline <link rel="stylesheet" href="..."> (either attribute order)
+  const linkRe = /<link\b[^>]*>/gi;
+  doc = doc.replace(linkRe, (tag)=>{
+    if(!/rel=["']stylesheet["']/i.test(tag)) return tag;
+    const hrefMatch = tag.match(/href=["']([^"']+)["']/i);
+    if(!hrefMatch) return tag;
+    const f = resolveSiblingFile(hrefMatch[1], otherFiles);
+    return f ? `<style>\n${f.code}\n</style>` : tag;
+  });
+
+  // inline <script src="..."><\/script>
+  doc = doc.replace(/<script\b([^>]*)\ssrc=["']([^"']+)["']([^>]*)><\/script>/gi, (tag, before, src, after)=>{
+    const f = resolveSiblingFile(src, otherFiles);
+    return f ? `<script${before}${after}>\n${f.code}\n<\/script>` : tag;
+  });
+
+  return doc;
+}
+
+function buildDownloadAllButton(files){
+  const wrap = document.createElement('div');
+  wrap.style.marginTop = '10px';
+  const btn = document.createElement('button');
+  btn.className = 'msg-copy-btn';
+  btn.textContent = '📦 Download all as .zip (' + files.length + ' files)';
+  btn.onclick = async ()=>{
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Zipping…';
+    try{
+      const zip = new JSZip();
+      files.forEach(f=> zip.file(f.name, f.code));
+      const blob = await zip.generateAsync({ type:'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'cvai-files.zip'; a.click();
+      URL.revokeObjectURL(url);
+      btn.textContent = '✅ Downloaded';
+      setTimeout(()=>{ btn.textContent = originalText; btn.disabled = false; }, 1500);
+    }catch(e){
+      btn.textContent = 'Zip failed — try individual downloads';
+      btn.disabled = false;
+    }
+  };
+  wrap.appendChild(btn);
+  return wrap;
+}
+
+function buildFileCard(file, allFiles=[file]){
   const card = document.createElement('div');
   card.className = 'filecard';
 
@@ -1715,7 +1929,7 @@ function buildFileCard(file){
     const previewBtn = document.createElement('button');
     previewBtn.textContent = '👁 Preview';
     previewBtn.onclick = ()=>{
-      previewFrame.srcdoc = file.code;
+      previewFrame.srcdoc = buildPreviewDoc(file, allFiles);
       previewOverlay.style.display = 'flex';
     };
     actions.appendChild(previewBtn);
@@ -1741,7 +1955,8 @@ function renderAssistantMessage(text, shouldType, opts={}){
   const div = document.createElement('div');
   div.className = 'msg ai';
   if(intro) setMarkdownContent(div, intro);
-  files.forEach(f=> div.appendChild(buildFileCard(f)));
+  files.forEach(f=> div.appendChild(buildFileCard(f, files)));
+  if(files.length > 1) div.appendChild(buildDownloadAllButton(files));
   if(outro){
     const outroEl = document.createElement('div');
     setMarkdownContent(outroEl, outro);
@@ -1751,6 +1966,7 @@ function renderAssistantMessage(text, shouldType, opts={}){
   addMsgToolbar(row, ()=> text, { showRegenerate: !!opts.showRegenerate });
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
+  if(shouldType) recordCodeFiles(files);
   return row;
 }
 
@@ -1838,23 +2054,43 @@ function setBusy(state){
   cameraBtn.disabled = state;
 }
 
+function trimmedHistoryForRequest(){
+  if(history.length <= MAX_HISTORY_TURNS) return history;
+  // keep the most recent turns so context stays relevant without the payload growing forever
+  return history.slice(history.length - MAX_HISTORY_TURNS);
+}
+
+async function callChatApi(signal){
+  const body = {
+    contents: trimmedHistoryForRequest(),
+    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    generationConfig: { temperature: 0.9 }
+  };
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal
+  });
+  const data = await response.json();
+  return { response, data };
+}
+
+const TRANSIENT_STATUS_CODES = new Set([500, 502, 503, 504]);
+
 async function runAIResponse(){
   const thinking = addThinkingRow();
   setBusy(true);
   activeAbortController = new AbortController();
   try{
-    const body = {
-      contents: history,
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      generationConfig: { temperature: 0.9 }
-    };
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: activeAbortController.signal
-    });
-    const data = await response.json();
+    let { response, data } = await callChatApi(activeAbortController.signal);
+
+    // transient server hiccups (model overloaded, gateway errors) get one silent retry
+    if(!response.ok && TRANSIENT_STATUS_CODES.has(response.status)){
+      await new Promise(r=> setTimeout(r, 1200));
+      ({ response, data } = await callChatApi(activeAbortController.signal));
+    }
+
     thinking.stopCycle();
     thinking.row.remove();
 
