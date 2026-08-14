@@ -1,30 +1,46 @@
 // This file goes in a folder called "api" at the root of your repo, as "api/chat.js"
-// Vercel automatically turns this into a live endpoint at: https://yoursite.vercel.app/api/chat
-//
-// Uses Google's Gemini API, which has a genuinely free tier (no credit card needed).
-// Get a free key at: https://aistudio.google.com/apikey
-// Then set GEMINI_API_KEY as an Environment Variable in your Vercel project settings.
+// Vercel automatically turns this into a live endpoint at: https://vercel.app
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: { message: 'Method not allowed' } });
   }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({
-      error: { message: 'Server is missing GEMINI_API_KEY. Add it in Vercel > Project Settings > Environment Variables.' }
-    });
+    return res.status(500).json({ error: { message: 'Server is missing GEMINI_API_KEY.' } });
   }
+
   try {
+    const clientBody = req.body || {};
+
+    // Lowest possible restrictions allowed for free tier accounts
+    const freeTierSettings = [
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_ONLY_HIGH" }
+    ];
+
+    const modifiedBody = {
+      ...clientBody,
+      safetySettings: freeTierSettings
+    };
+
+    // Google Gemini Free Tier API endpoint:
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(modifiedBody)
       }
     );
+
     const data = await response.json();
     return res.status(response.status).json(data);
+
   } catch (err) {
     return res.status(500).json({ error: { message: err.message } });
   }
