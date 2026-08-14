@@ -302,16 +302,21 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     color:var(--nebula-cyan); border-bottom:1px solid rgba(94,234,212,0.18);
   }
   .filecard-header .lang{ color:rgba(243,244,255,0.4); font-weight:500; text-transform:uppercase; font-size:0.65rem; }
-  .code-block{ display:flex; max-height:320px; overflow:auto; }
+  .code-block{ display:flex; max-height:320px; overflow-y:auto; overflow-x:hidden; position:relative; background:rgba(3,4,9,0.4); }
   .code-gutter{
-    flex:none; user-select:none; text-align:right; padding:12px 10px 12px 14px;
-    color:rgba(243,244,255,0.28); font-family:'IBM Plex Mono',monospace;
-    font-size:0.8rem; line-height:1.5; white-space:pre;
-    border-right:1px solid rgba(94,234,212,0.14); background:rgba(255,255,255,0.02);
+    position:sticky; left:0; z-index:2; flex:none; user-select:none; text-align:right;
+    padding:12px 14px 12px 16px; min-width:2.8em;
+    color:rgba(94,234,212,0.42); font-family:'IBM Plex Mono',monospace;
+    font-size:0.76rem; font-weight:500; line-height:1.55; white-space:pre; font-variant-numeric:tabular-nums;
+    letter-spacing:0.02em;
+    border-right:1px solid rgba(94,234,212,0.22);
+    background:linear-gradient(180deg, rgba(94,234,212,0.08), rgba(6,8,16,0.97) 45%);
+    box-shadow:2px 0 10px rgba(0,0,0,0.3);
   }
-  .filecard pre{ margin:0; padding:12px; overflow:visible; font-size:0.8rem; line-height:1.5; white-space:pre; flex:1; min-width:0; }
+  .code-block:hover .code-gutter{ color:rgba(94,234,212,0.8); border-right-color:rgba(94,234,212,0.42); }
+  .filecard pre{ margin:0; padding:12px; overflow-x:auto; overflow-y:visible; font-size:0.8rem; line-height:1.55; white-space:pre; flex:1; min-width:0; }
   .filecard code{ word-break:normal; }
-  .filecard-actions{ display:flex; gap:6px; padding:7px 10px; border-top:1px solid rgba(94,234,212,0.14); }
+  .filecard-actions{ display:flex; gap:6px; padding:7px 10px; border-top:1px solid rgba(94,234,212,0.14); flex-wrap:wrap; }
   .filecard-actions button{
     background:transparent; border:1px solid var(--line); color:var(--star);
     border-radius:6px; padding:5px 10px; font-family:'IBM Plex Mono'; font-size:0.72rem; cursor:pointer;
@@ -376,8 +381,10 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     padding:5px 8px; font-family:'IBM Plex Mono'; font-size:0.72rem; max-width:200px;
   }
   #projectPreviewBar button{ background:transparent; border:1px solid var(--line); color:var(--star); border-radius:6px; padding:5px 10px; cursor:pointer; font-family:'IBM Plex Mono'; font-size:0.75rem; flex:none; }
-  #projectPreviewBody{ flex:1; display:flex; min-height:0; }
-  #projectTree{ width:220px; flex:none; overflow-y:auto; border-right:1px solid var(--line); background:rgba(5,7,13,0.35); padding:8px 0; }
+  #projectTreeToggle.on{ border-color:var(--nebula-cyan); color:var(--nebula-cyan); background:rgba(94,234,212,0.1); }
+  #projectPreviewBody{ flex:1; display:flex; min-height:0; position:relative; }
+  #projectTree{ width:220px; flex:none; overflow-y:auto; border-right:1px solid var(--line); background:rgba(5,7,13,0.35); padding:8px 0; transition:width .15s ease; }
+  #projectTree.collapsed{ display:none; }
   .ptree-item{
     display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:0.76rem; cursor:pointer;
     color:rgba(243,244,255,0.68); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -398,6 +405,30 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     cursor:pointer; font-size:0.85rem; margin-left:4px;
   }
   #fpPreviewBtn:hover{ background:rgba(94,234,212,0.24); }
+
+  /* pasted-code snippet box (input bar) */
+  #codeSnippetWrap{
+    display:none; margin-bottom:10px; border:1px solid rgba(94,234,212,0.32); border-radius:10px;
+    overflow:hidden; background:rgba(5,7,13,0.6);
+    animation:filecardReveal .35s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .cs-header{
+    display:flex; align-items:center; gap:8px; padding:6px 10px;
+    background:rgba(94,234,212,0.09); border-bottom:1px solid rgba(94,234,212,0.2);
+    font-family:'Space Grotesk',sans-serif; font-size:0.72rem; color:var(--nebula-cyan); font-weight:600;
+  }
+  .cs-lang{ text-transform:uppercase; letter-spacing:0.05em; }
+  .cs-lines{ color:rgba(243,244,255,0.4); font-weight:500; }
+  .cs-header button{
+    margin-left:auto; background:transparent; border:1px solid var(--line); color:var(--star);
+    border-radius:5px; width:22px; height:22px; cursor:pointer; font-size:0.7rem; flex:none; line-height:1;
+  }
+  .cs-header button:hover{ border-color:var(--nebula-cyan); color:var(--nebula-cyan); }
+  #csRemoveBtn{ margin-left:4px; }
+  .cs-block{ display:flex; max-height:120px; overflow-y:auto; overflow-x:hidden; background:rgba(3,4,9,0.4); transition:max-height .2s ease; }
+  .cs-block.expanded{ max-height:320px; }
+  .cs-block pre{ margin:0; padding:10px 12px; overflow-x:auto; font-size:0.78rem; line-height:1.5; white-space:pre; flex:1; min-width:0; }
+  .cs-block code{ word-break:normal; }
 
   .inputbar{ border-top:1px solid var(--line); padding:16px 18px; background:rgba(0,0,0,0.18); }
   #imgPreviewWrap{ display:none; position:relative; margin-bottom:10px; width:fit-content; max-width:100%; }
@@ -610,6 +641,34 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     button.icon{ width:42px; height:42px; font-size:1.05rem; }
     .msg-toolbar{ opacity:1; }
     .bg-panel{ width:min(280px,86vw); }
+
+    /* file cards & code */
+    .filecard-header{ font-size:0.7rem; padding:6px 10px; }
+    .code-gutter{ min-width:2.2em; padding:10px 8px 10px 10px; font-size:0.68rem; }
+    .filecard pre{ font-size:0.74rem; padding:10px; }
+    .code-block{ max-height:240px; }
+    .filecard-actions{ padding:6px 8px; gap:5px; }
+    .filecard-actions button{ padding:6px 9px; font-size:0.68rem; }
+
+    /* dropzone */
+    .dropzone-inner{ font-size:0.78rem; padding:10px 16px; }
+
+    /* pasted code snippet */
+    .cs-block{ max-height:96px; }
+    .cs-header{ font-size:0.68rem; padding:5px 8px; }
+    .cs-block pre{ font-size:0.72rem; padding:8px 10px; }
+
+    /* full-screen project preview on mobile, tree becomes an overlay drawer */
+    #projectPreviewOverlay{ padding:0; }
+    #projectPreviewBox{ width:100vw; width:100dvw; height:100vh; height:100dvh; border-radius:0; }
+    #projectPreviewBar{ flex-wrap:wrap; gap:6px; padding:8px 10px; }
+    #projectPreviewTitle{ font-size:0.68rem; flex-basis:100%; order:-1; }
+    #projectEntrySelect{ max-width:130px; font-size:0.68rem; }
+    #projectTreeToggle{ font-size:0.68rem; padding:5px 8px; }
+    #projectTree{
+      position:absolute; inset:0 auto 0 0; z-index:5; width:80vw; max-width:300px;
+      box-shadow:14px 0 40px rgba(0,0,0,0.5);
+    }
   }
 </style>
 </head>
@@ -690,6 +749,18 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
       </div>
       <button id="removeImg">✕</button>
     </div>
+    <div id="codeSnippetWrap">
+      <div class="cs-header">
+        <span class="cs-lang" id="csLang">code</span>
+        <span class="cs-lines" id="csLines"></span>
+        <button id="csExpandBtn" type="button" title="Expand/collapse">⤢</button>
+        <button id="csRemoveBtn" type="button" title="Remove">✕</button>
+      </div>
+      <div class="cs-block" id="csBlock">
+        <div class="code-gutter" id="csGutter"></div>
+        <pre><code id="csCode"></code></pre>
+      </div>
+    </div>
     <div class="inputrow">
       <button class="icon" id="attachBtn" title="Attach file">📎</button>
       <button class="icon" id="cameraBtn" title="Use camera">📷</button>
@@ -714,6 +785,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   <div id="projectPreviewBox">
     <div id="projectPreviewBar">
       <span id="projectPreviewTitle">Project preview — sandboxed, not a real network server</span>
+      <button id="projectTreeToggle" title="Toggle file list">☰ Files</button>
       <select id="projectEntrySelect" title="Switch preview entry"></select>
       <button id="closeProjectPreview">Close ✕</button>
     </div>
@@ -1179,6 +1251,15 @@ const closePreview = document.getElementById('closePreview');
 const fpPreviewBtn = document.getElementById('fpPreviewBtn');
 const chatwrap = document.getElementById('chatwrap');
 const dropzoneOverlay = document.getElementById('dropzoneOverlay');
+const codeSnippetWrap = document.getElementById('codeSnippetWrap');
+const csLang = document.getElementById('csLang');
+const csLines = document.getElementById('csLines');
+const csGutter = document.getElementById('csGutter');
+const csCode = document.getElementById('csCode');
+const csBlock = document.getElementById('csBlock');
+const csExpandBtn = document.getElementById('csExpandBtn');
+const csRemoveBtn = document.getElementById('csRemoveBtn');
+const projectTreeToggle = document.getElementById('projectTreeToggle');
 const projectPreviewOverlay = document.getElementById('projectPreviewOverlay');
 const projectPreviewBox = document.getElementById('projectPreviewBox');
 const projectPreviewTitle = document.getElementById('projectPreviewTitle');
@@ -1475,6 +1556,83 @@ chatwrap.addEventListener('drop', (e)=>{
   dropzoneOverlay.classList.remove('show');
   if(busy || (chatLocked && !adminMode)) return;
   handleIncomingFiles(e.dataTransfer.files);
+});
+
+// ================= paste/typed code detection -> tidy code box =================
+let pendingCodeSnippet = null;
+
+function looksLikeCode(text){
+  const trimmed = text.trim();
+  if(trimmed.length < 40) return false;
+  const lines = trimmed.split('\n');
+  if(lines.length < 4 && trimmed.length < 220) return false;
+  const codeHints = /(function\s*\(|=>|;\s*$|^\s*(const|let|var|def|class|import|export|public|private|#include|SELECT|package|using|fn\s|<\?php)|<\/?[a-zA-Z][^>]*>|^\s*[{}]\s*$|^\s*\/\/|^\s*#(?!!)|:\s*$)/m;
+  const hintMatches = (trimmed.match(codeHints) || []).length;
+  const indentedLines = lines.filter(l=> /^(\s{2,}|\t)/.test(l)).length;
+  const punctCount = (trimmed.match(/[{};()<>]/g) || []).length;
+  return hintMatches > 0 || indentedLines > lines.length * 0.3 || punctCount > lines.length * 1.5;
+}
+
+function detectLangFromCode(text){
+  const t = text.trim();
+  if(/^<!doctype html|<html[\s>]/i.test(t)) return 'html';
+  if(/<\/?[a-z][^>]*>/i.test(t.slice(0, 200)) && !/=>|function\s*\(/.test(t.slice(0, 80))) return 'html';
+  if(/^\s*(import\s.+from|def\s|class\s.+:)/m.test(t) && /:\s*$/m.test(t)) return 'python';
+  if(/^\s*(function|const|let|var)\s|=>|require\(|module\.exports/m.test(t)) return 'javascript';
+  if(/^\s*(SELECT|INSERT|UPDATE|DELETE)\s/i.test(t)) return 'sql';
+  if(/#include\s*</.test(t)) return 'cpp';
+  if(/^\s*\{[\s\S]*\}\s*$/.test(t) && /"[^"]+"\s*:/.test(t)) return 'json';
+  if(/^\s*[.#]?[\w-]+\s*\{/.test(t) && /:\s*[^;]+;/.test(t)) return 'css';
+  return 'text';
+}
+
+function attachPastedCode(text){
+  pendingCodeSnippet = { code: text, lang: detectLangFromCode(text) };
+  renderCodeSnippet();
+}
+
+function renderCodeSnippet(){
+  if(!pendingCodeSnippet){ codeSnippetWrap.style.display = 'none'; return; }
+  const { code, lang } = pendingCodeSnippet;
+  const lines = code.split('\n');
+  csLang.textContent = lang;
+  csLines.textContent = lines.length + ' line' + (lines.length === 1 ? '' : 's');
+  csGutter.textContent = Array.from({ length: lines.length }, (_, i)=> i + 1).join('\n');
+  csCode.className = 'language-' + lang;
+  csCode.textContent = code;
+  csBlock.classList.remove('expanded');
+  codeSnippetWrap.style.display = 'block';
+}
+
+csExpandBtn.onclick = ()=> csBlock.classList.toggle('expanded');
+csRemoveBtn.onclick = ()=>{ pendingCodeSnippet = null; renderCodeSnippet(); };
+
+// paste: catches code pasted from elsewhere
+textInput.addEventListener('paste', (e)=>{
+  if(pendingCodeSnippet) return;
+  const cd = e.clipboardData || window.clipboardData;
+  if(!cd) return;
+  const text = cd.getData('text');
+  if(!text) return;
+  if(looksLikeCode(text)){
+    e.preventDefault();
+    attachPastedCode(text);
+  }
+});
+
+// typing: also catches code typed/edited directly in the box (debounced)
+let typedCodeCheckTimer = null;
+textInput.addEventListener('input', ()=>{
+  if(pendingCodeSnippet) return;
+  clearTimeout(typedCodeCheckTimer);
+  typedCodeCheckTimer = setTimeout(()=>{
+    const val = textInput.value;
+    if(looksLikeCode(val) && val.split('\n').length >= 6){
+      textInput.value = '';
+      textInput.style.height = 'auto';
+      attachPastedCode(val);
+    }
+  }, 900);
 });
 
 // ================= camera capture =================
@@ -2198,6 +2356,10 @@ async function openProjectPreview(files, opts={}){
   renderProjectTree(normalized, entryName, selectHandler);
   projectEntrySelect.onchange = ()=> selectHandler(projectEntrySelect.value);
 
+  const showTree = opts.showTree !== false;
+  projectTreeEl.classList.toggle('collapsed', !showTree);
+  projectTreeToggle.classList.toggle('on', showTree);
+
   const label = opts.title || (normalized.length + ' file' + (normalized.length === 1 ? '' : 's'));
   projectPreviewTitle.textContent = 'Project preview — ' + label + ' — sandboxed, not a real network server';
 
@@ -2210,6 +2372,11 @@ async function openProjectPreview(files, opts={}){
   projectPreviewOverlay.style.display = 'flex';
 }
 
+projectTreeToggle.onclick = ()=>{
+  const nowVisible = projectTreeEl.classList.toggle('collapsed') === false;
+  projectTreeToggle.classList.toggle('on', nowVisible);
+};
+
 function closeProjectPreview(){
   projectPreviewOverlay.style.display = 'none';
   projectPreviewFrame.srcdoc = '';
@@ -2220,8 +2387,6 @@ closeProjectPreviewBtn.onclick = closeProjectPreview;
 projectPreviewOverlay.addEventListener('click', (e)=>{ if(e.target === projectPreviewOverlay) closeProjectPreview(); });
 
 function buildDownloadAllButton(files){
-  const wrap = document.createElement('div');
-  wrap.style.marginTop = '10px';
   const btn = document.createElement('button');
   btn.className = 'msg-copy-btn';
   btn.textContent = '📦 Download all as .zip (' + files.length + ' files)';
@@ -2244,8 +2409,7 @@ function buildDownloadAllButton(files){
       btn.disabled = false;
     }
   };
-  wrap.appendChild(btn);
-  return wrap;
+  return btn;
 }
 
 function buildFileCard(file, allFiles=[file]){
@@ -2296,14 +2460,6 @@ function buildFileCard(file, allFiles=[file]){
   };
   actions.appendChild(downloadBtn);
 
-  const isHtml = /\.html?$/i.test(file.name) || file.lang === 'html';
-  if(isHtml){
-    const previewBtn = document.createElement('button');
-    previewBtn.textContent = '👁 Preview';
-    previewBtn.onclick = ()=> openProjectPreview(allFiles, { entryName: file.name });
-    actions.appendChild(previewBtn);
-  }
-
   card.appendChild(header); card.appendChild(codeBlock); card.appendChild(actions);
   return card;
 }
@@ -2325,15 +2481,28 @@ function renderAssistantMessage(text, shouldType, opts={}){
   div.className = 'msg ai';
   if(intro) setMarkdownContent(div, intro);
   files.forEach(f=> div.appendChild(buildFileCard(f, files)));
-  if(files.length > 1){
-    const actionsWrap = buildDownloadAllButton(files);
-    const projectBtn = document.createElement('button');
-    projectBtn.className = 'msg-copy-btn';
-    projectBtn.style.marginLeft = '8px';
-    projectBtn.textContent = '🗂 Browse project structure';
-    projectBtn.onclick = ()=> openProjectPreview(files);
-    actionsWrap.appendChild(projectBtn);
-    div.appendChild(actionsWrap);
+
+  const hasWebFile = files.some(f=> /\.html?$/i.test(f.name) || (f.lang || '').toLowerCase() === 'html');
+  if(files.length > 1 || hasWebFile){
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;';
+    if(files.length > 1){
+      btnRow.appendChild(buildDownloadAllButton(files));
+    }
+    if(hasWebFile){
+      const liveBtn = document.createElement('button');
+      liveBtn.className = 'msg-copy-btn';
+      liveBtn.textContent = '👁 Live preview';
+      liveBtn.onclick = ()=> openProjectPreview(files, { showTree:false });
+      btnRow.appendChild(liveBtn);
+
+      const structBtn = document.createElement('button');
+      structBtn.className = 'msg-copy-btn';
+      structBtn.textContent = '🗂 Browse structure';
+      structBtn.onclick = ()=> openProjectPreview(files, { showTree:true });
+      btnRow.appendChild(structBtn);
+    }
+    div.appendChild(btnRow);
   }
   if(outro){
     const outroEl = document.createElement('div');
@@ -2549,13 +2718,23 @@ async function sendMessage(text, attachment){
 async function send(){
   const text = textInput.value.trim();
   const attachment = pendingAttachment;
-  if(!text && !attachment) return;
+  const snippet = pendingCodeSnippet;
+  if(!text && !attachment && !snippet) return;
   textInput.value = '';
   textInput.style.height = 'auto';
   pendingAttachment = null;
   imgPreviewWrap.style.display = 'none';
   fileInput.value = '';
-  await sendMessage(text, attachment);
+  pendingCodeSnippet = null;
+  renderCodeSnippet();
+
+  let finalText = text;
+  if(snippet){
+    const fenceLang = snippet.lang === 'text' ? '' : snippet.lang;
+    const fence = '```' + fenceLang + '\n' + snippet.code + '\n```';
+    finalText = finalText ? (finalText + '\n\n' + fence) : fence;
+  }
+  await sendMessage(finalText, attachment);
 }
 
 // initial state
