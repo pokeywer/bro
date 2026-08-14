@@ -342,6 +342,63 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   #previewBar button{ background:transparent; border:1px solid var(--line); color:var(--star); border-radius:6px; padding:5px 10px; cursor:pointer; font-family:'IBM Plex Mono'; font-size:0.75rem; }
   #previewFrame{ flex:1; border:none; width:100%; background:#fff; }
 
+  /* drag & drop */
+  #dropzoneOverlay{
+    position:absolute; inset:0; z-index:40; display:none; align-items:center; justify-content:center;
+    background:rgba(94,234,212,0.12); border:2px dashed var(--nebula-cyan); border-radius:14px;
+    backdrop-filter:blur(2px); pointer-events:none;
+  }
+  #dropzoneOverlay.show{ display:flex; }
+  .dropzone-inner{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:0.9rem; color:var(--nebula-cyan);
+    background:var(--panel-solid); padding:14px 22px; border-radius:10px; border:1px solid var(--line);
+    text-align:center;
+  }
+
+  /* full project preview modal */
+  #projectPreviewOverlay{
+    position:fixed; inset:0; background:rgba(2,3,8,0.8); backdrop-filter:blur(4px);
+    display:none; align-items:center; justify-content:center; z-index:60; padding:20px;
+  }
+  #projectPreviewBox{
+    width:min(1100px,96vw); height:min(740px,90vh); background:#0b0e18;
+    border:1px solid rgba(94,234,212,0.3); border-radius:12px; overflow:hidden;
+    display:flex; flex-direction:column; box-shadow:0 30px 90px rgba(0,0,0,0.6);
+  }
+  #projectPreviewBar{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px; background:rgba(94,234,212,0.08); border-bottom:1px solid rgba(94,234,212,0.2);
+    font-family:'Space Grotesk',sans-serif; font-size:0.78rem; color:var(--nebula-cyan); flex:none;
+  }
+  #projectPreviewTitle{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #projectEntrySelect{
+    background:rgba(5,7,13,0.6); border:1px solid var(--line); color:var(--star); border-radius:6px;
+    padding:5px 8px; font-family:'IBM Plex Mono'; font-size:0.72rem; max-width:200px;
+  }
+  #projectPreviewBar button{ background:transparent; border:1px solid var(--line); color:var(--star); border-radius:6px; padding:5px 10px; cursor:pointer; font-family:'IBM Plex Mono'; font-size:0.75rem; flex:none; }
+  #projectPreviewBody{ flex:1; display:flex; min-height:0; }
+  #projectTree{ width:220px; flex:none; overflow-y:auto; border-right:1px solid var(--line); background:rgba(5,7,13,0.35); padding:8px 0; }
+  .ptree-item{
+    display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:0.76rem; cursor:pointer;
+    color:rgba(243,244,255,0.68); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .ptree-item:hover{ background:rgba(243,244,255,0.06); }
+  .ptree-item.active{ background:rgba(94,234,212,0.14); color:var(--nebula-cyan); }
+  .ptree-icon{ flex:none; }
+  #projectPreviewMain{ flex:1; min-width:0; display:flex; position:relative; }
+  #projectPreviewFrame{ flex:1; border:none; width:100%; background:#fff; }
+  #projectPreviewCode{
+    flex:1; margin:0; padding:16px; overflow:auto; color:var(--star); font-size:0.8rem;
+    white-space:pre-wrap; word-break:break-word; font-family:'IBM Plex Mono',monospace;
+  }
+  #fpPreviewBtn{
+    display:none; align-items:center; justify-content:center; flex:none; background:rgba(94,234,212,0.12);
+    border:1px solid rgba(94,234,212,0.4); color:var(--nebula-cyan); border-radius:6px; width:26px; height:26px;
+    cursor:pointer; font-size:0.85rem; margin-left:4px;
+  }
+  #fpPreviewBtn:hover{ background:rgba(94,234,212,0.24); }
+
   .inputbar{ border-top:1px solid var(--line); padding:16px 18px; background:rgba(0,0,0,0.18); }
   #imgPreviewWrap{ display:none; position:relative; margin-bottom:10px; width:fit-content; max-width:100%; }
   #imgPreview{ max-height:84px; border-radius:6px; border:1px solid var(--line); display:block; }
@@ -566,7 +623,10 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 <h1>CVAI</h1>
 <p class="sub" style="margin-bottom:20px; font-weight:600; letter-spacing:0.04em;">Made by du bist gut genug</p>
 
-<div class="chatwrap">
+<div class="chatwrap" id="chatwrap">
+  <div id="dropzoneOverlay">
+    <div class="dropzone-inner">📥 Drop files to attach — multiple files &amp; .zip supported</div>
+  </div>
   <div class="chatbar">
     <span class="dot"></span><span class="dot"></span><span class="dot"></span>
     <span class="title" id="chatTitle">CVAI — live session</span>
@@ -626,6 +686,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
           <div class="fp-name" id="fpName"></div>
           <div class="fp-size" id="fpSize"></div>
         </div>
+        <button id="fpPreviewBtn" type="button" title="Preview project">👁</button>
       </div>
       <button id="removeImg">✕</button>
     </div>
@@ -637,7 +698,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     </div>
   </div>
 </div>
-<input type="file" id="fileInput" accept="image/*,video/*,audio/*,.pdf,.txt,.md,.csv,.json,.html,.css,.js,.py,.xml,.rtf,.zip">
+<input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,.pdf,.txt,.md,.csv,.json,.html,.css,.js,.py,.xml,.rtf,.zip">
 
 <div id="previewOverlay">
   <div id="previewBox">
@@ -646,6 +707,23 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
       <button id="closePreview">Close ✕</button>
     </div>
     <iframe id="previewFrame" sandbox="allow-scripts"></iframe>
+  </div>
+</div>
+
+<div id="projectPreviewOverlay">
+  <div id="projectPreviewBox">
+    <div id="projectPreviewBar">
+      <span id="projectPreviewTitle">Project preview — sandboxed, not a real network server</span>
+      <select id="projectEntrySelect" title="Switch preview entry"></select>
+      <button id="closeProjectPreview">Close ✕</button>
+    </div>
+    <div id="projectPreviewBody">
+      <div id="projectTree"></div>
+      <div id="projectPreviewMain">
+        <iframe id="projectPreviewFrame" sandbox="allow-scripts"></iframe>
+        <pre id="projectPreviewCode" style="display:none;"></pre>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1098,6 +1176,17 @@ const removeImg = document.getElementById('removeImg');
 const previewOverlay = document.getElementById('previewOverlay');
 const previewFrame = document.getElementById('previewFrame');
 const closePreview = document.getElementById('closePreview');
+const fpPreviewBtn = document.getElementById('fpPreviewBtn');
+const chatwrap = document.getElementById('chatwrap');
+const dropzoneOverlay = document.getElementById('dropzoneOverlay');
+const projectPreviewOverlay = document.getElementById('projectPreviewOverlay');
+const projectPreviewBox = document.getElementById('projectPreviewBox');
+const projectPreviewTitle = document.getElementById('projectPreviewTitle');
+const projectEntrySelect = document.getElementById('projectEntrySelect');
+const closeProjectPreviewBtn = document.getElementById('closeProjectPreview');
+const projectTreeEl = document.getElementById('projectTree');
+const projectPreviewFrame = document.getElementById('projectPreviewFrame');
+const projectPreviewCode = document.getElementById('projectPreviewCode');
 const adminBadge = document.getElementById('adminBadge');
 const announceBanner = document.getElementById('announceBanner');
 const announceText = document.getElementById('announceText');
@@ -1219,6 +1308,34 @@ window.addEventListener('appinstalled', ()=>{
 
 
 const MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024;
+const MAX_ARCHIVE_BYTES = 20 * 1024 * 1024;
+
+const PREVIEWABLE_TEXT_EXT = new Set([
+  'html','htm','css','scss','js','jsx','ts','tsx','mjs','cjs','json','md','txt','csv',
+  'xml','svg','py','java','c','h','cpp','hpp','cs','go','rb','php','sql','sh','yml','yaml','toml','ini','conf'
+]);
+
+const EXT_MIME_MAP = {
+  html:'text/html', htm:'text/html', css:'text/css', js:'application/javascript', mjs:'application/javascript',
+  json:'application/json', png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif',
+  svg:'image/svg+xml', webp:'image/webp', ico:'image/x-icon', woff:'font/woff', woff2:'font/woff2',
+  ttf:'font/ttf', otf:'font/otf', txt:'text/plain', md:'text/markdown', xml:'application/xml',
+  mp3:'audio/mpeg', mp4:'video/mp4', wav:'audio/wav'
+};
+function guessMimeFromName(name){
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return EXT_MIME_MAP[ext] || 'application/octet-stream';
+}
+function normalizeName(n){ return (n || '').replace(/^\.?\//, ''); }
+function fileIconFor(name){
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  if(['png','jpg','jpeg','gif','svg','webp','ico'].includes(ext)) return '🖼️';
+  if(ext === 'css' || ext === 'scss') return '🎨';
+  if(['js','jsx','ts','tsx','mjs','cjs'].includes(ext)) return '📜';
+  if(ext === 'json') return '🧩';
+  if(ext === 'md') return '📝';
+  return '📄';
+}
 
 const EXT_MIME_FALLBACK = {
   pdf:'application/pdf', txt:'text/plain', md:'text/markdown', csv:'text/csv',
@@ -1253,37 +1370,112 @@ function formatBytes(bytes){
 }
 
 attachBtn.onclick = ()=> fileInput.click();
-fileInput.onchange = async (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
+
+async function buildMultiFileAttachment(fileList){
+  const inputFiles = Array.from(fileList);
+  const collected = []; // { name, blob }
+  for(const file of inputFiles){
+    const isZip = (file.type === 'application/zip') || /\.zip$/i.test(file.name || '');
+    if(isZip){
+      const zip = await JSZip.loadAsync(file);
+      const entries = Object.values(zip.files).filter(f=> !f.dir);
+      for(const entry of entries){
+        const blob = await entry.async('blob');
+        collected.push({ name: entry.name, blob });
+      }
+    } else {
+      collected.push({ name: file.name, blob: file });
+    }
+  }
+  if(collected.length === 0) return { kind:'archive', zipText:'(no files found)', fileCount:0, projectFiles:[], size:0, name:'empty' };
+
+  let out = `${collected.length} file(s) attached:\n`;
+  collected.forEach(f=> out += '- ' + f.name + '\n');
+  out += '\n---\n';
+
+  let budgetLeft = ZIP_TEXT_BUDGET_CHARS;
+  let filesSkippedBinary = 0, filesSkippedBudget = 0;
+  for(const f of collected){
+    const ext = (f.name.split('.').pop() || '').toLowerCase();
+    if(!ZIP_TEXT_EXTENSIONS.has(ext)){ filesSkippedBinary++; continue; }
+    if(budgetLeft <= 0){ filesSkippedBudget++; continue; }
+    let content;
+    try{ content = await f.blob.text(); }catch(e){ filesSkippedBinary++; continue; }
+    if(content.length > budgetLeft){
+      content = content.slice(0, budgetLeft) + '\n...[truncated, file continues]';
+    }
+    out += `\n**${f.name}**\n\`\`\`${ext}\n${content}\n\`\`\`\n`;
+    budgetLeft -= content.length;
+  }
+  if(filesSkippedBinary) out += `\n(${filesSkippedBinary} binary/non-text file(s) not shown, listed above by name only)\n`;
+  if(filesSkippedBudget) out += `\n(${filesSkippedBudget} more text file(s) omitted — too large to include everything)\n`;
+
+  const totalSize = collected.reduce((s,f)=> s + (f.blob.size || 0), 0);
+  const displayName = inputFiles.length === 1 ? inputFiles[0].name : (collected.length + ' files');
+  return { kind:'archive', zipText: out, fileCount: collected.length, projectFiles: collected, size: totalSize, name: displayName };
+}
+
+async function handleIncomingFiles(fileList){
+  if(!fileList || fileList.length === 0) return;
   attachBtn.disabled = true;
   try{
-    if(file.size > MAX_ATTACHMENT_BYTES){
-      throw new Error(`file is ${formatBytes(file.size)} — please attach something under ${formatBytes(MAX_ATTACHMENT_BYTES)}`);
+    const files = Array.from(fileList);
+    const isSingleZip = files.length === 1 && ((files[0].type === 'application/zip') || /\.zip$/i.test(files[0].name || ''));
+    const isMulti = files.length > 1 || isSingleZip;
+    const totalSize = files.reduce((s,f)=> s + f.size, 0);
+    const cap = isMulti ? MAX_ARCHIVE_BYTES : MAX_ATTACHMENT_BYTES;
+    if(totalSize > cap){
+      throw new Error(`that's ${formatBytes(totalSize)} — please keep attachments under ${formatBytes(cap)}`);
     }
-    const mimeType = guessMimeType(file);
-    const isZip = mimeType === 'application/zip' || (file.name || '').toLowerCase().endsWith('.zip');
-    const kind = isZip ? 'archive' : kindOf(mimeType);
     let attachment;
-    if(isZip){
-      const { text, fileCount } = await extractZipAsText(file);
-      attachment = { zipText: text, fileCount };
-    } else if(kind === 'image'){
-      attachment = await resizeImage(file, 1024, 0.85);
+    if(isMulti){
+      attachment = await buildMultiFileAttachment(files);
     } else {
-      attachment = await readFileAsBase64(file, mimeType);
+      const file = files[0];
+      const mimeType = guessMimeType(file);
+      const kind = kindOf(mimeType);
+      if(kind === 'image') attachment = await resizeImage(file, 1024, 0.85);
+      else attachment = await readFileAsBase64(file, mimeType);
+      attachment.kind = kind;
+      attachment.name = file.name;
+      attachment.size = file.size;
     }
-    attachment.kind = kind;
-    attachment.name = file.name;
-    attachment.size = file.size;
     pendingAttachment = attachment;
     showAttachmentPreview(attachment);
   }catch(err){
-    addPlainMessage('ai', 'Could not attach that file: ' + err.message, true);
+    addPlainMessage('ai', 'Could not attach that: ' + err.message, true);
   }
   attachBtn.disabled = false;
-};
+}
+
+fileInput.onchange = (e)=>{ handleIncomingFiles(e.target.files); };
 removeImg.onclick = ()=>{ pendingAttachment = null; imgPreviewWrap.style.display = 'none'; fileInput.value = ''; };
+
+// ================= drag & drop attach =================
+let dragCounter = 0;
+['dragenter','dragover'].forEach(evt=>{
+  chatwrap.addEventListener(evt, (e)=>{
+    if(!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes('Files')) return;
+    e.preventDefault(); e.stopPropagation();
+    if(evt === 'dragenter'){
+      dragCounter++;
+      dropzoneOverlay.classList.add('show');
+    }
+  });
+});
+chatwrap.addEventListener('dragleave', (e)=>{
+  e.preventDefault(); e.stopPropagation();
+  dragCounter = Math.max(0, dragCounter - 1);
+  if(dragCounter === 0) dropzoneOverlay.classList.remove('show');
+});
+chatwrap.addEventListener('drop', (e)=>{
+  if(!e.dataTransfer) return;
+  e.preventDefault(); e.stopPropagation();
+  dragCounter = 0;
+  dropzoneOverlay.classList.remove('show');
+  if(busy || (chatLocked && !adminMode)) return;
+  handleIncomingFiles(e.dataTransfer.files);
+});
 
 // ================= camera capture =================
 const cameraBtn = document.getElementById('cameraBtn');
@@ -1488,6 +1680,8 @@ function showAttachmentPreview(attachment){
   imgPreview.classList.add('hidden');
   vidPreview.style.display = 'none';
   filePreviewChip.style.display = 'none';
+  fpPreviewBtn.style.display = 'none';
+  fpPreviewBtn.onclick = null;
   if(attachment.kind === 'image'){
     imgPreview.src = attachment.dataUrl;
     imgPreview.classList.remove('hidden');
@@ -1501,6 +1695,10 @@ function showAttachmentPreview(attachment){
       ? (attachment.fileCount + ' file' + (attachment.fileCount === 1 ? '' : 's'))
       : formatBytes(attachment.size);
     filePreviewChip.style.display = 'flex';
+    if(attachment.kind === 'archive' && attachment.projectFiles && attachment.projectFiles.length){
+      fpPreviewBtn.style.display = 'inline-flex';
+      fpPreviewBtn.onclick = (e)=>{ e.stopPropagation(); openProjectPreview(attachment.projectFiles, { title: attachment.name }); };
+    }
   }
   imgPreviewWrap.style.display = 'block';
 }
@@ -1744,7 +1942,15 @@ function addPlainMessage(role, text, isError, attachment, opts={}){
       const chip = document.createElement('div');
       chip.className = 'filechip-inline';
       const icon = attachment.kind === 'audio' ? '🎵' : (attachment.kind === 'archive' ? '🗂️' : '📄');
-      chip.innerHTML = `<span>${icon}</span><span>${attachment.name || 'attachment'}</span>`;
+      chip.innerHTML = `<span>${icon}</span><span>${escapeHtml(attachment.name || 'attachment')}</span>`;
+      if(attachment.kind === 'archive' && attachment.projectFiles && attachment.projectFiles.length){
+        const pvBtn = document.createElement('button');
+        pvBtn.textContent = '👁 Preview project';
+        pvBtn.className = 'msg-copy-btn';
+        pvBtn.style.marginLeft = '8px';
+        pvBtn.onclick = ()=> openProjectPreview(attachment.projectFiles, { title: attachment.name });
+        chip.appendChild(pvBtn);
+      }
       div.appendChild(chip);
     }
   }
@@ -1862,6 +2068,157 @@ function buildPreviewDoc(htmlFile, allFiles){
   return doc;
 }
 
+// ================= full project preview (multi-file structure browser) =================
+let activeProjectPreviewUrls = [];
+
+function revokeProjectPreviewUrls(){
+  activeProjectPreviewUrls.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} });
+  activeProjectPreviewUrls = [];
+}
+
+async function getFileText(f){
+  if(f.code != null) return f.code;
+  if(f.blob){ try{ return await f.blob.text(); }catch(e){ return ''; } }
+  return '';
+}
+
+function findBlobUrl(blobMap, ref){
+  if(/^([a-z]+:)?\/\//i.test(ref) || ref.startsWith('data:') || ref.startsWith('#')) return null;
+  const clean = ref.replace(/^\.?\//, '').split('?')[0].split('#')[0];
+  if(blobMap[clean]) return blobMap[clean];
+  const key = Object.keys(blobMap).find(k=> k.endsWith('/' + clean));
+  return key ? blobMap[key] : null;
+}
+
+function rewriteRefs(text, blobMap){
+  let out = text.replace(/(src|href)=(["'])([^"']+)\2/gi, (m, attr, q, ref)=>{
+    const url = findBlobUrl(blobMap, ref);
+    return url ? `${attr}=${q}${url}${q}` : m;
+  });
+  out = out.replace(/url\((['"]?)([^'")]+)\1\)/gi, (m, q, ref)=>{
+    const url = findBlobUrl(blobMap, ref);
+    return url ? `url(${url})` : m;
+  });
+  return out;
+}
+
+function highlightTreeItem(name){
+  projectTreeEl.querySelectorAll('.ptree-item').forEach(el=> el.classList.toggle('active', el.dataset.name === name));
+  projectEntrySelect.value = name;
+}
+
+function renderProjectTree(files, activeName, onSelect){
+  projectTreeEl.innerHTML = '';
+  const sorted = [...files].sort((a,b)=> a.name.localeCompare(b.name));
+  sorted.forEach(f=>{
+    const item = document.createElement('div');
+    item.className = 'ptree-item';
+    item.dataset.name = f.name;
+    const depth = f.name.split('/').length - 1;
+    item.style.paddingLeft = (10 + depth * 14) + 'px';
+    const isHtml = /\.html?$/i.test(f.name);
+    const icon = document.createElement('span'); icon.className = 'ptree-icon'; icon.textContent = isHtml ? '🌐' : fileIconFor(f.name);
+    const label = document.createElement('span'); label.textContent = f.name.split('/').pop();
+    item.appendChild(icon); item.appendChild(label);
+    item.title = f.name;
+    if(f.name === activeName) item.classList.add('active');
+    item.onclick = ()=> onSelect(f.name);
+    projectTreeEl.appendChild(item);
+  });
+}
+
+async function renderProjectEntry(files, blobMap, entryName){
+  const entry = files.find(f=> f.name === entryName);
+  if(!entry) return;
+  const raw = await getFileText(entry);
+  const rewritten = rewriteRefs(raw, blobMap);
+  projectPreviewFrame.style.display = '';
+  projectPreviewCode.style.display = 'none';
+  projectPreviewFrame.srcdoc = rewritten;
+  highlightTreeItem(entryName);
+}
+
+async function renderProjectFileContent(files, name){
+  const f = files.find(x=> x.name === name);
+  if(!f) return;
+  projectPreviewFrame.style.display = 'none';
+  projectPreviewCode.style.display = '';
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  if(f.blob && !PREVIEWABLE_TEXT_EXT.has(ext)){
+    projectPreviewCode.textContent = '(binary file — use Download to view it)';
+  } else {
+    projectPreviewCode.textContent = await getFileText(f);
+  }
+  highlightTreeItem(name);
+}
+
+async function openProjectPreview(files, opts={}){
+  if(!files || files.length === 0) return;
+  revokeProjectPreviewUrls();
+
+  const normalized = files.map(f=> ({ name: normalizeName(f.name), code: f.code, blob: f.blob }));
+
+  const blobMap = {};
+  normalized.forEach(f=>{
+    const mime = guessMimeFromName(f.name);
+    const blob = f.blob ? f.blob : new Blob([f.code != null ? f.code : ''], { type: mime });
+    const url = URL.createObjectURL(blob);
+    activeProjectPreviewUrls.push(url);
+    blobMap[f.name] = url;
+  });
+
+  const htmlFiles = normalized.filter(f=> /\.html?$/i.test(f.name));
+  let entryName = null;
+  if(opts.entryName){
+    const clean = normalizeName(opts.entryName);
+    if(normalized.some(f=> f.name === clean)) entryName = clean;
+  }
+  if(!entryName){
+    const idx = htmlFiles.find(f=> /(^|\/)index\.html?$/i.test(f.name));
+    entryName = idx ? idx.name : (htmlFiles[0] ? htmlFiles[0].name : null);
+  }
+
+  projectEntrySelect.innerHTML = '';
+  if(htmlFiles.length){
+    htmlFiles.forEach(f=>{
+      const opt = document.createElement('option');
+      opt.value = f.name; opt.textContent = f.name;
+      projectEntrySelect.appendChild(opt);
+    });
+    projectEntrySelect.style.display = htmlFiles.length > 1 ? '' : 'none';
+  } else {
+    projectEntrySelect.style.display = 'none';
+  }
+
+  const selectHandler = async (name)=>{
+    if(/\.html?$/i.test(name)) await renderProjectEntry(normalized, blobMap, name);
+    else await renderProjectFileContent(normalized, name);
+  };
+
+  renderProjectTree(normalized, entryName, selectHandler);
+  projectEntrySelect.onchange = ()=> selectHandler(projectEntrySelect.value);
+
+  const label = opts.title || (normalized.length + ' file' + (normalized.length === 1 ? '' : 's'));
+  projectPreviewTitle.textContent = 'Project preview — ' + label + ' — sandboxed, not a real network server';
+
+  if(entryName){
+    await renderProjectEntry(normalized, blobMap, entryName);
+  } else {
+    await renderProjectFileContent(normalized, normalized[0].name);
+  }
+
+  projectPreviewOverlay.style.display = 'flex';
+}
+
+function closeProjectPreview(){
+  projectPreviewOverlay.style.display = 'none';
+  projectPreviewFrame.srcdoc = '';
+  projectPreviewCode.textContent = '';
+  revokeProjectPreviewUrls();
+}
+closeProjectPreviewBtn.onclick = closeProjectPreview;
+projectPreviewOverlay.addEventListener('click', (e)=>{ if(e.target === projectPreviewOverlay) closeProjectPreview(); });
+
 function buildDownloadAllButton(files){
   const wrap = document.createElement('div');
   wrap.style.marginTop = '10px';
@@ -1943,10 +2300,7 @@ function buildFileCard(file, allFiles=[file]){
   if(isHtml){
     const previewBtn = document.createElement('button');
     previewBtn.textContent = '👁 Preview';
-    previewBtn.onclick = ()=>{
-      previewFrame.srcdoc = buildPreviewDoc(file, allFiles);
-      previewOverlay.style.display = 'flex';
-    };
+    previewBtn.onclick = ()=> openProjectPreview(allFiles, { entryName: file.name });
     actions.appendChild(previewBtn);
   }
 
@@ -1971,7 +2325,16 @@ function renderAssistantMessage(text, shouldType, opts={}){
   div.className = 'msg ai';
   if(intro) setMarkdownContent(div, intro);
   files.forEach(f=> div.appendChild(buildFileCard(f, files)));
-  if(files.length > 1) div.appendChild(buildDownloadAllButton(files));
+  if(files.length > 1){
+    const actionsWrap = buildDownloadAllButton(files);
+    const projectBtn = document.createElement('button');
+    projectBtn.className = 'msg-copy-btn';
+    projectBtn.style.marginLeft = '8px';
+    projectBtn.textContent = '🗂 Browse project structure';
+    projectBtn.onclick = ()=> openProjectPreview(files);
+    actionsWrap.appendChild(projectBtn);
+    div.appendChild(actionsWrap);
+  }
   if(outro){
     const outroEl = document.createElement('div');
     setMarkdownContent(outroEl, outro);
