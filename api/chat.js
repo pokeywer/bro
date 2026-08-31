@@ -1,5 +1,5 @@
 // This file goes in a folder called "api" at the root of your repo, as "api/chat.js"
-// Vercel automatically turns this into a live endpoint at: https://vercel.app
+// Vercel automatically turns this into a live endpoint at: https://your-app.vercel.app
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -23,14 +23,18 @@ export default async function handler(req, res) {
       { category: "HARM_CATEGORY_CIVIC_INTEGRITY", threshold: "BLOCK_ONLY_HIGH" }
     ];
 
+    // Build standard payload format expected by generateContent API
     const modifiedBody = {
-      ...clientBody,
-      safetySettings: freeTierSettings
+      contents: clientBody.contents || [
+        { parts: [{ text: clientBody.prompt || "Hello" }] }
+      ],
+      safetySettings: freeTierSettings,
+      generationConfig: clientBody.generationConfig || {}
     };
 
-    // Google Gemini Free Tier API endpoint:
+    // Google Gemini REST API endpoint targeting a specific valid Flash model variation
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      `https://googleapis.com{apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
