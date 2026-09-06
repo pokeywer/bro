@@ -31,10 +31,13 @@ export default async function handler(req, res) {
       safetySettings: freeTierSettings,
       generationConfig: clientBody.generationConfig || {}
     };
+    if (clientBody.systemInstruction) {
+      modifiedBody.systemInstruction = clientBody.systemInstruction;
+    }
 
     // Google Gemini REST API endpoint targeting a specific valid Flash model variation
     const response = await fetch(
-      `https://googleapis.com{apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
