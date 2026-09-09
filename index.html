@@ -361,42 +361,70 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   }
 
   /* full project preview modal */
+  @keyframes ppFadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  @keyframes ppRiseIn{ from{ opacity:0; transform:translateY(10px) scale(0.985); } to{ opacity:1; transform:none; } }
   #projectPreviewOverlay{
-    position:fixed; inset:0; background:rgba(2,3,8,0.8); backdrop-filter:blur(4px);
+    position:fixed; inset:0; background:rgba(2,3,8,0.82); backdrop-filter:blur(6px);
     display:none; align-items:center; justify-content:center; z-index:60; padding:20px;
+    animation:ppFadeIn .18s ease both;
   }
   #projectPreviewBox{
-    width:min(1100px,96vw); height:min(740px,90vh); background:#0b0e18;
-    border:1px solid rgba(94,234,212,0.3); border-radius:12px; overflow:hidden;
-    display:flex; flex-direction:column; box-shadow:0 30px 90px rgba(0,0,0,0.6);
+    width:min(1140px,96vw); height:min(760px,90vh); background:linear-gradient(180deg, rgba(15,18,30,0.98), #0a0c15);
+    border:1px solid rgba(94,234,212,0.28); border-radius:16px; overflow:hidden;
+    display:flex; flex-direction:column; box-shadow:0 40px 100px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    animation:ppRiseIn .22s cubic-bezier(.2,.8,.2,1) both;
   }
   #projectPreviewBar{
-    display:flex; align-items:center; gap:10px;
-    padding:10px 14px; background:rgba(94,234,212,0.08); border-bottom:1px solid rgba(94,234,212,0.2);
+    display:flex; align-items:center; gap:8px;
+    padding:11px 14px; background:linear-gradient(180deg, rgba(94,234,212,0.1), rgba(94,234,212,0.04));
+    border-bottom:1px solid rgba(94,234,212,0.22);
     font-family:'Space Grotesk',sans-serif; font-size:0.78rem; color:var(--nebula-cyan); flex:none;
   }
-  #projectPreviewTitle{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #projectPreviewTitle{
+    flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    display:flex; align-items:center; gap:7px; font-weight:600;
+  }
+  #projectPreviewTitle::before{ content:'●'; color:#5eead4; font-size:0.55rem; filter:drop-shadow(0 0 4px rgba(94,234,212,0.8)); }
   #projectEntrySelect{
-    background:rgba(5,7,13,0.6); border:1px solid var(--line); color:var(--star); border-radius:6px;
-    padding:5px 8px; font-family:'IBM Plex Mono'; font-size:0.72rem; max-width:200px;
+    background:rgba(5,7,13,0.7); border:1px solid var(--line); color:var(--star); border-radius:7px;
+    padding:6px 9px; font-family:'IBM Plex Mono'; font-size:0.72rem; max-width:200px; cursor:pointer;
   }
-  #projectPreviewBar button{ background:transparent; border:1px solid var(--line); color:var(--star); border-radius:6px; padding:5px 10px; cursor:pointer; font-family:'IBM Plex Mono'; font-size:0.75rem; flex:none; }
-  #projectTreeToggle.on{ border-color:var(--nebula-cyan); color:var(--nebula-cyan); background:rgba(94,234,212,0.1); }
+  #projectEntrySelect:hover{ border-color:rgba(94,234,212,0.4); }
+  #projectPreviewBar button{
+    display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.03); border:1px solid var(--line);
+    color:var(--star); border-radius:7px; padding:6px 11px; cursor:pointer; font-family:'IBM Plex Mono';
+    font-size:0.75rem; flex:none; transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  #projectPreviewBar button:hover{ border-color:rgba(94,234,212,0.4); color:var(--nebula-cyan); background:rgba(94,234,212,0.08); }
+  #projectTreeToggle.on{ border-color:var(--nebula-cyan); color:var(--nebula-cyan); background:rgba(94,234,212,0.14); }
+  #closeProjectPreview{ margin-left:2px; }
+  #closeProjectPreview:hover{ border-color:rgba(255,120,120,0.5); color:#ff9b9b; background:rgba(255,90,90,0.1); }
   #projectPreviewBody{ flex:1; display:flex; min-height:0; position:relative; }
-  #projectTree{ width:220px; flex:none; overflow-y:auto; border-right:1px solid var(--line); background:rgba(5,7,13,0.35); padding:8px 0; transition:width .15s ease; }
-  #projectTree.collapsed{ display:none; }
-  .ptree-item{
-    display:flex; align-items:center; gap:6px; padding:6px 10px; font-size:0.76rem; cursor:pointer;
-    color:rgba(243,244,255,0.68); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    font-family:'IBM Plex Mono',monospace;
+  #projectTreeBackdrop{
+    display:none; position:absolute; inset:0; z-index:4; background:rgba(2,3,8,0.55);
   }
-  .ptree-item:hover{ background:rgba(243,244,255,0.06); }
-  .ptree-item.active{ background:rgba(94,234,212,0.14); color:var(--nebula-cyan); }
+  #projectTree{
+    width:230px; flex:none; overflow-y:auto; border-right:1px solid var(--line);
+    background:rgba(6,8,15,0.55); padding:10px 0 8px; transition:width .15s ease;
+  }
+  #projectTree.collapsed{ display:none; }
+  .ptree-header{
+    padding:2px 12px 10px; margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.06);
+    font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:rgba(243,244,255,0.38);
+  }
+  .ptree-item{
+    display:flex; align-items:center; gap:7px; padding:7px 10px; margin:1px 6px; border-radius:7px; font-size:0.76rem; cursor:pointer;
+    color:rgba(243,244,255,0.68); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    font-family:'IBM Plex Mono',monospace; transition:background .12s ease, color .12s ease;
+  }
+  .ptree-item:hover{ background:rgba(243,244,255,0.07); color:var(--star); }
+  .ptree-item.active{ background:rgba(94,234,212,0.16); color:var(--nebula-cyan); box-shadow:inset 2px 0 0 var(--nebula-cyan); }
   .ptree-icon{ flex:none; }
-  #projectPreviewMain{ flex:1; min-width:0; display:flex; position:relative; }
+  #projectPreviewMain{ flex:1; min-width:0; display:flex; position:relative; background:#fff; }
   #projectPreviewFrame{ flex:1; border:none; width:100%; background:#fff; }
   #projectPreviewCode{
-    flex:1; margin:0; padding:16px; overflow:auto; color:var(--star); font-size:0.8rem;
+    flex:1; margin:0; padding:16px; overflow:auto; color:var(--star); font-size:0.8rem; background:#0b0e18;
     white-space:pre-wrap; word-break:break-word; font-family:'IBM Plex Mono',monospace;
   }
   #fpPreviewBtn{
@@ -658,17 +686,24 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     .cs-header{ font-size:0.68rem; padding:5px 8px; }
     .cs-block pre{ font-size:0.72rem; padding:8px 10px; }
 
-    /* full-screen project preview on mobile, tree becomes an overlay drawer */
+    /* full-screen project preview on mobile, tree becomes a slide-in drawer with backdrop */
     #projectPreviewOverlay{ padding:0; }
     #projectPreviewBox{ width:100vw; width:100dvw; height:100vh; height:100dvh; border-radius:0; }
-    #projectPreviewBar{ flex-wrap:wrap; gap:6px; padding:8px 10px; }
-    #projectPreviewTitle{ font-size:0.68rem; flex-basis:100%; order:-1; }
-    #projectEntrySelect{ max-width:130px; font-size:0.68rem; }
-    #projectTreeToggle{ font-size:0.68rem; padding:5px 8px; }
+    #projectPreviewBar{ flex-wrap:wrap; gap:6px; padding:9px 10px calc(9px + env(safe-area-inset-top)) 10px; }
+    #projectPreviewTitle{ font-size:0.7rem; flex-basis:100%; order:-1; }
+    #projectEntrySelect{ max-width:118px; font-size:0.7rem; padding:7px 8px; }
+    #projectPreviewBar button{ font-size:0.7rem; padding:7px 10px; }
+    #projectTreeBackdrop.show{ display:block; animation:ppFadeIn .15s ease both; }
     #projectTree{
-      position:absolute; inset:0 auto 0 0; z-index:5; width:80vw; max-width:300px;
-      box-shadow:14px 0 40px rgba(0,0,0,0.5);
+      position:absolute; inset:0 auto 0 0; z-index:5; width:82vw; max-width:300px;
+      box-shadow:18px 0 50px rgba(0,0,0,0.55);
+      transform:translateX(-100%); transition:transform .2s cubic-bezier(.2,.8,.2,1);
     }
+    /* on mobile the drawer slides instead of disappearing, so override the display:none collapse */
+    #projectTree.collapsed{ display:block; transform:translateX(-100%); }
+    #projectTree:not(.collapsed){ transform:translateX(0); }
+    .ptree-item{ padding:10px 12px; font-size:0.8rem; }
+    #projectPreviewCode{ font-size:0.76rem; padding:14px; }
   }
 </style>
 </head>
@@ -790,6 +825,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
       <button id="closeProjectPreview">Close ✕</button>
     </div>
     <div id="projectPreviewBody">
+      <div id="projectTreeBackdrop"></div>
       <div id="projectTree"></div>
       <div id="projectPreviewMain">
         <iframe id="projectPreviewFrame" sandbox="allow-scripts"></iframe>
@@ -1266,6 +1302,7 @@ const projectPreviewTitle = document.getElementById('projectPreviewTitle');
 const projectEntrySelect = document.getElementById('projectEntrySelect');
 const closeProjectPreviewBtn = document.getElementById('closeProjectPreview');
 const projectTreeEl = document.getElementById('projectTree');
+const projectTreeBackdrop = document.getElementById('projectTreeBackdrop');
 const projectPreviewFrame = document.getElementById('projectPreviewFrame');
 const projectPreviewCode = document.getElementById('projectPreviewCode');
 const adminBadge = document.getElementById('adminBadge');
@@ -1322,7 +1359,7 @@ function exportTranscript(){
   URL.revokeObjectURL(url);
 }
 
-const SYSTEM_PROMPT = "You are CVAI, a sharp, friendly coding and chat assistant. If asked who owns, made, or runs this website/app, say it was made by Lance A. Melencion. Be direct and useful: answer the actual question first, keep prose concise, and use short paragraphs or bullet points instead of walls of text. When something is genuinely ambiguous, make a reasonable assumption and say what you assumed rather than stalling with questions. When you write code, structure every file exactly like this: a line with the filename in bold markdown (e.g. **index.html**) immediately followed by a fenced code block with a language tag — use this format for every file, even if there's only one, and keep filenames simple with correct extensions (index.html, style.css, script.js, main.py, etc). Prefer complete, working, runnable code over fragments or placeholders. Briefly explain what you built or changed before or after the code block, but don't repeat the whole file back in prose. Outside of code, just write normally. Some messages will be prefixed with '[ADMIN ANNOUNCEMENT]' — these come from the site's admin/owner rather than a regular visitor. Treat them as trusted announcements or instructions from the person running the app, and respond accordingly (e.g. acknowledge broadcasts, follow admin instructions), without implying that any regular user can label their own messages this way.";
+const SYSTEM_PROMPT = "You are CVAI, a sharp, friendly coding and chat assistant. If asked who owns, made, or runs this website/app, say it was made by Lance A. Melencion. Be direct and useful: answer the actual question first, keep prose concise, and use short paragraphs or bullet points instead of walls of text. When something is genuinely ambiguous, make a reasonable assumption and say what you assumed rather than stalling with questions. Before answering anything involving code, math, logic, debugging, or multi-step planning, work through it carefully step by step in your head — trace through edge cases, check that code actually compiles/runs and does what was asked, and catch your own mistakes — then give only the clean final answer, never the scratch work. If a bug report or error message is included, reason about the actual root cause instead of guessing at a surface-level fix. When you write code, structure every file exactly like this: a line with the filename in bold markdown (e.g. **index.html**) immediately followed by a fenced code block with a language tag — use this format for every file, even if there's only one, and keep filenames simple with correct extensions (index.html, style.css, script.js, main.py, etc). Prefer complete, working, runnable code over fragments or placeholders. Briefly explain what you built or changed before or after the code block, but don't repeat the whole file back in prose. Outside of code, just write normally. Some messages will be prefixed with '[ADMIN ANNOUNCEMENT]' — these come from the site's admin/owner rather than a regular visitor. Treat them as trusted announcements or instructions from the person running the app, and respond accordingly (e.g. acknowledge broadcasts, follow admin instructions), without implying that any regular user can label their own messages this way.";
 
 const MAX_HISTORY_TURNS = 24; // keep the payload lean on long chats without losing recent context
 
@@ -2240,24 +2277,53 @@ async function getFileText(f){
   return '';
 }
 
-function findBlobUrl(blobMap, ref){
+function findBlobUrl(assetMap, ref){
   if(/^([a-z]+:)?\/\//i.test(ref) || ref.startsWith('data:') || ref.startsWith('#')) return null;
   const clean = ref.replace(/^\.?\//, '').split('?')[0].split('#')[0];
-  if(blobMap[clean]) return blobMap[clean];
-  const key = Object.keys(blobMap).find(k=> k.endsWith('/' + clean));
-  return key ? blobMap[key] : null;
+  if(assetMap[clean]) return assetMap[clean];
+  const key = Object.keys(assetMap).find(k=> k.endsWith('/' + clean));
+  return key ? assetMap[key] : null;
 }
 
-function rewriteRefs(text, blobMap){
+function rewriteRefs(text, assetMap){
   let out = text.replace(/(src|href)=(["'])([^"']+)\2/gi, (m, attr, q, ref)=>{
-    const url = findBlobUrl(blobMap, ref);
+    const url = findBlobUrl(assetMap, ref);
     return url ? `${attr}=${q}${url}${q}` : m;
   });
   out = out.replace(/url\((['"]?)([^'")]+)\1\)/gi, (m, q, ref)=>{
-    const url = findBlobUrl(blobMap, ref);
+    const url = findBlobUrl(assetMap, ref);
     return url ? `url(${url})` : m;
   });
   return out;
+}
+
+// Sandboxed iframes (sandbox="allow-scripts", no allow-same-origin) get an opaque
+// origin, so blob: URLs created by the parent page silently fail to load inside them —
+// that's why only index.html rendered and style.css/script.js/images never showed up.
+// data: URLs have no such same-origin check, so every sibling file gets converted to
+// one of those instead and the preview becomes fully self-contained.
+function blobToDataUrl(blob){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result);
+    reader.onerror = ()=> resolve(null);
+    reader.readAsDataURL(blob);
+  });
+}
+function textToDataUrl(text, mime){
+  try{
+    return 'data:' + mime + ';base64,' + btoa(unescape(encodeURIComponent(text != null ? text : '')));
+  }catch(e){
+    return null;
+  }
+}
+async function buildAssetMap(files){
+  const map = {};
+  for(const f of files){
+    const mime = guessMimeFromName(f.name);
+    map[f.name] = f.blob ? await blobToDataUrl(f.blob) : textToDataUrl(f.code, mime);
+  }
+  return map;
 }
 
 function highlightTreeItem(name){
@@ -2267,6 +2333,10 @@ function highlightTreeItem(name){
 
 function renderProjectTree(files, activeName, onSelect){
   projectTreeEl.innerHTML = '';
+  const header = document.createElement('div');
+  header.className = 'ptree-header';
+  header.textContent = files.length + ' file' + (files.length === 1 ? '' : 's');
+  projectTreeEl.appendChild(header);
   const sorted = [...files].sort((a,b)=> a.name.localeCompare(b.name));
   sorted.forEach(f=>{
     const item = document.createElement('div');
@@ -2285,11 +2355,11 @@ function renderProjectTree(files, activeName, onSelect){
   });
 }
 
-async function renderProjectEntry(files, blobMap, entryName){
+async function renderProjectEntry(files, assetMap, entryName){
   const entry = files.find(f=> f.name === entryName);
   if(!entry) return;
   const raw = await getFileText(entry);
-  const rewritten = rewriteRefs(raw, blobMap);
+  const rewritten = rewriteRefs(raw, assetMap);
   projectPreviewFrame.style.display = '';
   projectPreviewCode.style.display = 'none';
   projectPreviewFrame.srcdoc = rewritten;
@@ -2316,14 +2386,7 @@ async function openProjectPreview(files, opts={}){
 
   const normalized = files.map(f=> ({ name: normalizeName(f.name), code: f.code, blob: f.blob }));
 
-  const blobMap = {};
-  normalized.forEach(f=>{
-    const mime = guessMimeFromName(f.name);
-    const blob = f.blob ? f.blob : new Blob([f.code != null ? f.code : ''], { type: mime });
-    const url = URL.createObjectURL(blob);
-    activeProjectPreviewUrls.push(url);
-    blobMap[f.name] = url;
-  });
+  const assetMap = await buildAssetMap(normalized);
 
   const htmlFiles = normalized.filter(f=> /\.html?$/i.test(f.name));
   let entryName = null;
@@ -2349,8 +2412,13 @@ async function openProjectPreview(files, opts={}){
   }
 
   const selectHandler = async (name)=>{
-    if(/\.html?$/i.test(name)) await renderProjectEntry(normalized, blobMap, name);
+    if(/\.html?$/i.test(name)) await renderProjectEntry(normalized, assetMap, name);
     else await renderProjectFileContent(normalized, name);
+    if(window.innerWidth <= 640){
+      projectTreeEl.classList.add('collapsed');
+      projectTreeToggle.classList.remove('on');
+      projectTreeBackdrop.classList.remove('show');
+    }
   };
 
   renderProjectTree(normalized, entryName, selectHandler);
@@ -2359,12 +2427,13 @@ async function openProjectPreview(files, opts={}){
   const showTree = opts.showTree !== false;
   projectTreeEl.classList.toggle('collapsed', !showTree);
   projectTreeToggle.classList.toggle('on', showTree);
+  projectTreeBackdrop.classList.toggle('show', showTree);
 
   const label = opts.title || (normalized.length + ' file' + (normalized.length === 1 ? '' : 's'));
   projectPreviewTitle.textContent = 'Project preview — ' + label + ' — sandboxed, not a real network server';
 
   if(entryName){
-    await renderProjectEntry(normalized, blobMap, entryName);
+    await renderProjectEntry(normalized, assetMap, entryName);
   } else {
     await renderProjectFileContent(normalized, normalized[0].name);
   }
@@ -2375,12 +2444,19 @@ async function openProjectPreview(files, opts={}){
 projectTreeToggle.onclick = ()=>{
   const nowVisible = projectTreeEl.classList.toggle('collapsed') === false;
   projectTreeToggle.classList.toggle('on', nowVisible);
+  projectTreeBackdrop.classList.toggle('show', nowVisible);
+};
+projectTreeBackdrop.onclick = ()=>{
+  projectTreeEl.classList.add('collapsed');
+  projectTreeToggle.classList.remove('on');
+  projectTreeBackdrop.classList.remove('show');
 };
 
 function closeProjectPreview(){
   projectPreviewOverlay.style.display = 'none';
   projectPreviewFrame.srcdoc = '';
   projectPreviewCode.textContent = '';
+  projectTreeBackdrop.classList.remove('show');
   revokeProjectPreviewUrls();
 }
 closeProjectPreviewBtn.onclick = closeProjectPreview;
@@ -2611,7 +2687,11 @@ async function callChatApi(signal){
   const body = {
     contents: trimmedHistoryForRequest(),
     systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    generationConfig: { temperature: 0.9 }
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 16384,
+      thinkingConfig: { thinkingLevel: 'high' }
+    }
   };
   const response = await fetch('/api/chat', {
     method: 'POST',
@@ -2651,7 +2731,7 @@ async function runAIResponse(){
     }
     const candidate = data.candidates && data.candidates[0];
     const replyParts = (candidate && candidate.content && candidate.content.parts) || [];
-    const replyText = replyParts.map(p=> p.text || '').join('').trim() || "I couldn't generate a response for that — try rephrasing?";
+    const replyText = replyParts.filter(p=> !p.thought).map(p=> p.text || '').join('').trim() || "I couldn't generate a response for that — try rephrasing?";
 
     history.push({ role:'model', parts:[{ text: replyText }] });
     await renderAssistantMessage(replyText, true, { showRegenerate: true });
