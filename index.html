@@ -307,15 +307,15 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     position:sticky; left:0; z-index:2; flex:none; user-select:none; text-align:right;
     padding:12px 14px 12px 16px; min-width:2.8em;
     color:rgba(94,234,212,0.42); font-family:'IBM Plex Mono',monospace;
-    font-size:0.76rem; font-weight:500; line-height:1.55; white-space:pre; font-variant-numeric:tabular-nums;
+    font-size:0.8rem; font-weight:500; line-height:20px; white-space:pre; font-variant-numeric:tabular-nums;
     letter-spacing:0.02em;
     border-right:1px solid rgba(94,234,212,0.22);
     background:linear-gradient(180deg, rgba(94,234,212,0.08), rgba(6,8,16,0.97) 45%);
     box-shadow:2px 0 10px rgba(0,0,0,0.3);
   }
   .code-block:hover .code-gutter{ color:rgba(94,234,212,0.8); border-right-color:rgba(94,234,212,0.42); }
-  .filecard pre{ margin:0; padding:12px; overflow-x:auto; overflow-y:visible; font-size:0.8rem; line-height:1.55; white-space:pre; flex:1; min-width:0; }
-  .filecard code{ word-break:normal; }
+  .filecard pre{ margin:0; padding:12px; overflow-x:auto; overflow-y:visible; font-size:0.8rem; line-height:20px; white-space:pre; flex:1; min-width:0; }
+  .filecard code{ word-break:normal; line-height:20px; }
   .filecard-actions{ display:flex; gap:6px; padding:7px 10px; border-top:1px solid rgba(94,234,212,0.14); flex-wrap:wrap; }
   .filecard-actions button{
     background:transparent; border:1px solid var(--line); color:var(--star);
@@ -455,8 +455,8 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
   #csRemoveBtn{ margin-left:4px; }
   .cs-block{ display:flex; max-height:120px; overflow-y:auto; overflow-x:hidden; background:rgba(3,4,9,0.4); transition:max-height .2s ease; }
   .cs-block.expanded{ max-height:320px; }
-  .cs-block pre{ margin:0; padding:10px 12px; overflow-x:auto; font-size:0.78rem; line-height:1.5; white-space:pre; flex:1; min-width:0; }
-  .cs-block code{ word-break:normal; }
+  .cs-block pre{ margin:0; padding:12px; overflow-x:auto; font-size:0.8rem; line-height:20px; white-space:pre; flex:1; min-width:0; }
+  .cs-block code{ word-break:normal; line-height:20px; }
 
   .inputbar{ border-top:1px solid var(--line); padding:16px 18px; background:rgba(0,0,0,0.18); }
   #imgPreviewWrap{ display:none; position:relative; margin-bottom:10px; width:fit-content; max-width:100%; }
@@ -672,8 +672,9 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 
     /* file cards & code */
     .filecard-header{ font-size:0.7rem; padding:6px 10px; }
-    .code-gutter{ min-width:2.2em; padding:10px 8px 10px 10px; font-size:0.68rem; }
-    .filecard pre{ font-size:0.74rem; padding:10px; }
+    .code-gutter{ min-width:2.2em; padding:10px 8px 10px 10px; font-size:0.74rem; line-height:18px; }
+    .filecard pre{ font-size:0.74rem; line-height:18px; padding:10px; }
+    .filecard code{ line-height:18px; }
     .code-block{ max-height:240px; }
     .filecard-actions{ padding:6px 8px; gap:5px; }
     .filecard-actions button{ padding:6px 9px; font-size:0.68rem; }
@@ -684,7 +685,8 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     /* pasted code snippet */
     .cs-block{ max-height:96px; }
     .cs-header{ font-size:0.68rem; padding:5px 8px; }
-    .cs-block pre{ font-size:0.72rem; padding:8px 10px; }
+    .cs-block pre{ font-size:0.74rem; line-height:18px; padding:10px; }
+    .cs-block code{ line-height:18px; }
 
     /* full-screen project preview on mobile, tree becomes a slide-in drawer with backdrop */
     #projectPreviewOverlay{ padding:0; }
@@ -2056,8 +2058,8 @@ function startThinkingCycle(el){
   return ()=> clearInterval(interval);
 }
 
-const TYPE_CHARS_PER_SEC = 950;
-const TYPE_MAX_DURATION_MS = 2600;
+const TYPE_CHARS_PER_SEC = 2200;
+const TYPE_MAX_DURATION_MS = 900;
 let activeSkipTyping = null;
 function typeMarkdownInto(el, fullText){
   return new Promise(resolve=>{
@@ -2690,7 +2692,7 @@ async function callChatApi(signal){
     generationConfig: {
       temperature: 0.7,
       maxOutputTokens: 16384,
-      thinkingConfig: { thinkingLevel: 'high' }
+      thinkingConfig: { thinkingLevel: 'low' }
     }
   };
   const response = await fetch('/api/chat', {
